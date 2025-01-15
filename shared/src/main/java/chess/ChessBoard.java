@@ -1,5 +1,8 @@
 package chess;
 
+import java.util.Arrays;
+import java.util.Objects;
+
 /**
  * A chessboard that can hold and rearrange chess pieces.
  * <p>
@@ -11,19 +14,23 @@ package chess;
 
 
 public class ChessBoard {
+    private ChessPiece[][] board;
 
     public ChessBoard() {
-        
+        board = new ChessPiece[8][8];
     }
-
-    /**
-     * Adds a chess piece to the chessboard
-     *
-     * @param position where to add the piece to
-     * @param piece    the piece to add
-     */
     public void addPiece(ChessPosition position, ChessPiece piece) {
-        throw new RuntimeException("Not implemented");
+        int row = position.getRow();
+        int col = position.getColumn();
+//        System.out.print("this is position: ");
+//        System.out.print(row);
+//        System.out.print(col);
+        if (row < 0 || row >= 8 || col < 0 || col >= 8){
+            throw new IllegalArgumentException();
+        }
+        else {
+            board[row][col] = piece;
+        }
     }
 
     /**
@@ -34,7 +41,14 @@ public class ChessBoard {
      * position
      */
     public ChessPiece getPiece(ChessPosition position) {
-        throw new RuntimeException("Not implemented");
+        int row = position.getRow();
+        int col = position.getColumn();
+        if (board[row][col] == null){
+            return null;
+        }
+        else {
+            return board[row][col];
+        }
     }
 
     /**
@@ -43,5 +57,26 @@ public class ChessBoard {
      */
     public void resetBoard() {
         throw new RuntimeException("Not implemented");
+    }
+
+    @Override
+    public String toString() {
+        return "ChessBoard{" +
+                "board=" + Arrays.toString(board) +
+                '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        ChessBoard that = (ChessBoard) o;
+        return Objects.deepEquals(board, that.board);
+    }
+
+    @Override
+    public int hashCode() {
+        return Arrays.deepHashCode(board);
     }
 }
