@@ -21,7 +21,9 @@ public class ChessBoard {
     }
     public void addPiece(ChessPosition position, ChessPiece piece) {
         int row = position.getRow();
+        row --;
         int col = position.getColumn();
+        col --;
 //        System.out.print("this is position: ");
 //        System.out.print(row);
 //        System.out.print(col);
@@ -39,7 +41,9 @@ public class ChessBoard {
      */
     public ChessPiece getPiece(ChessPosition position) {
         int row = position.getRow();
+        row --;
         int col = position.getColumn();
+        col --;
         if (board[row][col] == null){
             return null;
         }
@@ -58,6 +62,7 @@ public class ChessBoard {
                 board[row][col] = null;
             }
         }
+//        System.out.print("got here");
         board[0][0] = new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.ROOK);
         board[0][1] = new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.KNIGHT);
         board[0][2] = new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.BISHOP);
@@ -88,7 +93,7 @@ public class ChessBoard {
     @Override
     public String toString() {
         return "ChessBoard{" +
-                "board=" + Arrays.toString(board) +
+                "board=" + Arrays.deepToString(board) +
                 '}';
     }
 
