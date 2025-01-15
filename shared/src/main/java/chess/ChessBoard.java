@@ -5,7 +5,11 @@ package chess;
  * <p>
  * Note: You can add to this class, but you may not alter
  * signature of the existing methods.
+ *piece except piece moves -> board -> move -> piecemoves
+ * get board tests to pass
  */
+
+
 public class ChessBoard {
 
     public ChessBoard() {
