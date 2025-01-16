@@ -27,8 +27,13 @@ public class ChessBoard {
 //        System.out.print("this is position: ");
 //        System.out.print(row);
 //        System.out.print(col);
-        if (row > 0 && row < 8 && col > 0 && col < 8){
+        if (row >= 0 && row < 8 && col >= 0 && col < 8){
             board[row][col] = piece;
+        }
+        else {
+//            System.out.print(row + "\n");
+//            System.out.print(col);
+            throw new IllegalArgumentException();
         }
     }
 
