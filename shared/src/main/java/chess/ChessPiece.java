@@ -42,8 +42,24 @@ public class ChessPiece {
      *
      * @return Collection of valid moves
      */
+
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
-        throw new RuntimeException("Not implemented");
+        switch (type){
+            case KING:
+                return null;
+            case QUEEN:
+                return null;
+            case BISHOP:
+                return null;
+            case KNIGHT:
+                return null;
+            case ROOK:
+                return null;
+            case PAWN:
+                return null;
+            default:
+                return null;
+        }
     }
 
     @Override
