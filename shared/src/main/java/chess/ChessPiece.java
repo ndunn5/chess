@@ -46,19 +46,19 @@ public class ChessPiece {
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
         switch (type){
             case KING:
-                return null;
+                return new KingMovesCalculator().pieceMoves(board, myPosition);
             case QUEEN:
-                return null;
+                return new QueenMovesCalculator().pieceMoves(board, myPosition);
             case BISHOP:
-                return null;
+                return new BishopMovesCalculator().pieceMoves(board, myPosition);
             case KNIGHT:
-                return null;
+                return new KnightMovesCalculator().pieceMoves(board, myPosition);
             case ROOK:
-                return null;
+                return new RookMovesCalculator().pieceMoves(board, myPosition);
             case PAWN:
-                return null;
+                return new PawnMovesCalculator().pieceMoves(board,myPosition);
             default:
-                return null;
+                throw new RuntimeException("some other piece dude...");
         }
     }
 
