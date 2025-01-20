@@ -2,6 +2,7 @@ package chess;
 
 import java.util.Collection;
 import java.util.Objects;
+import chess.RookMovesCalculator;
 
 /**
  * Represents a single chess piece

@@ -95,6 +95,35 @@ public class ChessBoard {
         }
     }
 
+    public boolean ValidMove(ChessPosition pos){
+        int row = pos.getRow();
+        int col = pos.getColumn();
+
+        return row > 0 && row <= 8 && col > 0 && col <= 8;
+    }
+
+    public int Occupied(ChessPosition MyPos, ChessPosition pos){
+        int row = pos.getRow();
+        row --;
+        int col = pos.getColumn();
+        col--;
+//        System.out.println(row);
+//        System.out.println(col);
+
+        if (board[row][col] == null){
+            return 0;
+        }
+        ChessPiece MyPiece = this.getPiece(MyPos);
+        ChessPiece TargetPiece = this.getPiece(pos);
+
+        if (MyPiece.getTeamColor() != TargetPiece.getTeamColor()){
+            return 1;
+        }
+        else{
+            return 2;
+        }
+    }
+
     @Override
     public String toString() {
         return "ChessBoard{" +

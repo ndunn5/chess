@@ -14,7 +14,7 @@ public class RookMovesCalculator implements PieceMovesCalculator {
         };
         return ChessHelper.MultipleMoves(board, myPosition, directions);
     }
-}
+
 //        System.out.print("WE GOT TO ROOK!");
 //        Collection<ChessMove> validMoves = new ArrayList<>();
 //
@@ -61,8 +61,8 @@ public class RookMovesCalculator implements PieceMovesCalculator {
 //                validMoves.add(currMove);
 //            }
 //        }
-        return validMoves;
-    }
+//        return validMoves;
+//    }
 
     @Override
     public int hashCode() {

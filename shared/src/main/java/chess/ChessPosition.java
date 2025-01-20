@@ -18,6 +18,13 @@ public class ChessPosition {
         return col;
     }
 
+    public ChessPosition offset(int rowOff, int colOff){
+        int newRow = this.row + rowOff;
+        int newColumn = this.col + colOff;
+
+        return new ChessPosition(newRow, newColumn);
+    }
+
     @Override
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) {
