@@ -15,55 +15,6 @@ public class RookMovesCalculator implements PieceMovesCalculator {
         return ChessHelper.MultipleMoves(board, myPosition, directions);
     }
 
-//        System.out.print("WE GOT TO ROOK!");
-//        Collection<ChessMove> validMoves = new ArrayList<>();
-//
-//        int initialRow = myPosition.getRow();
-//        initialRow --;
-//        int initialCol = myPosition.getColumn();
-//        initialCol --;
-//
-//        ChessPosition startPosition = new ChessPosition(initialRow, initialCol);
-//        ChessPosition currPosition = new ChessPosition(initialRow, initialCol);
-//        ChessMove currMove = new ChessMove(startPosition, currPosition, null);
-//        int currRow = initialRow;
-//        int currCol = initialCol;
-//        while (currRow > 1) {
-//            System.out.print(currRow);
-//            currRow--;
-//            currPosition.row = currRow;
-//            if (board.getPiece(currPosition) != null) {
-//                currMove.startPosition = startPosition;
-//                currMove.endPosition = currPosition;
-//                validMoves.add(currMove);
-//                break;
-//            } else {
-//                currMove.startPosition = startPosition;
-//                currMove.endPosition = currPosition;
-//                validMoves.add(currMove);
-//            }
-//        }
-//
-
-//        currRow = initialRow;
-//        while (currRow > 1) {
-//            System.out.print(currRow);
-//            currRow--;
-//            currPosition.row = currRow;
-//            if (board.getPiece(currPosition) != null) {
-//                currMove.startPosition = startPosition;
-//                currMove.endPosition = currPosition;
-//                validMoves.add(currMove);
-//                break;
-//            } else {
-//                currMove.startPosition = startPosition;
-//                currMove.endPosition = currPosition;
-//                validMoves.add(currMove);
-//            }
-//        }
-//        return validMoves;
-//    }
-
     @Override
     public int hashCode() {
         return super.hashCode();
