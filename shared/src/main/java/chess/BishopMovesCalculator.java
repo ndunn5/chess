@@ -9,7 +9,7 @@ public class BishopMovesCalculator implements PieceMovesCalculator {
                 {1, 1}, //up right
                 {-1, 1}, //up left
                 {-1, -1},//down left
-                {1, -1}, //down right
+                {1, -1} //down right
         };
         return ChessHelper.MultipleMoves(board, myPosition, directions);
     }
