@@ -10,15 +10,19 @@ import java.util.Collection;
  */
 public class ChessGame {
 
-    public ChessGame() {
+    private ChessBoard board;
+    private TeamColor currentTurn;
 
+    public ChessGame() {
+        this.board = new ChessBoard();
+        this.currentTurn = TeamColor.WHITE;
     }
 
     /**
      * @return Which team's turn it is
      */
     public TeamColor getTeamTurn() {
-        throw new RuntimeException("Not implemented");
+        return currentTurn;
     }
 
     /**
@@ -27,7 +31,7 @@ public class ChessGame {
      * @param team the team whose turn it is
      */
     public void setTeamTurn(TeamColor team) {
-        throw new RuntimeException("Not implemented");
+        currentTurn = team;
     }
 
     /**
@@ -46,6 +50,7 @@ public class ChessGame {
      * startPosition
      */
     public Collection<ChessMove> validMoves(ChessPosition startPosition) {
+//        ChessPiece.PieceType piece = board.getPiece(startPosition);
         throw new RuntimeException("Not implemented");
     }
 
@@ -56,6 +61,19 @@ public class ChessGame {
      * @throws InvalidMoveException if move is invalid
      */
     public void makeMove(ChessMove move) throws InvalidMoveException {
+//        ChessPosition startPosition = move.getStartPosition();
+//        int startRow = startPosition.getRow() - 1;
+//        int col = startPosition.getColumn() - 1;
+//        ChessPosition endPosition = move.getEndPosition();
+//        int endRow = endPosition.getRow() - 1;
+//        int endCol = endPosition.getColumn() - 1;
+//        ChessPiece.PieceType piece = move.getPromotionPiece();
+//        if(piece == null){//not a pawn being promoted
+//
+//        }
+//        else{ //pawn is being promoted
+//
+//        }
         throw new RuntimeException("Not implemented");
     }
 
