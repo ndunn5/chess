@@ -132,7 +132,21 @@ public class ChessBoard {
     }
 
     @Override
-    protected Object clone() throws CloneNotSupportedException {
-        return super.clone();
+    public ChessBoard clone() {
+        try {
+            ChessBoard clonedBoard = (ChessBoard) super.clone();
+            clonedBoard.board = new ChessPiece[8][8];
+            for (int row = 0; row < 8; row++) {
+                for (int col = 0; col < 8; col++) {
+                    ChessPiece piece = this.board[row][col];
+                    if (piece != null) {
+                        clonedBoard.board[row][col] = piece.clone();
+                    }
+                }
+            }
+            return clonedBoard;
+        } catch (CloneNotSupportedException e) {
+            throw new AssertionError();
+        }
     }
 }

@@ -61,4 +61,16 @@ public class ChessMove {
     public int hashCode() {
         return Objects.hash(startPosition, endPosition, promotionPiece);
     }
+
+    @Override
+    public ChessMove clone() {
+        try {
+            ChessMove cloned = (ChessMove) super.clone();
+            cloned.startPosition = new ChessPosition(startPosition.getRow(), startPosition.getColumn());
+            cloned.endPosition = new ChessPosition(endPosition.getRow(), endPosition.getColumn());
+            return cloned;
+        } catch (CloneNotSupportedException e) {
+            throw new AssertionError();
+        }
+    }
 }

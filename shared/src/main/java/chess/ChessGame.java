@@ -1,5 +1,6 @@
 package chess;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Objects;
 
@@ -52,26 +53,21 @@ public class ChessGame {
      * startPosition
      */
     public Collection<ChessMove> validMoves(ChessPosition startPosition) {
-        if (board.getPiece(startPosition) == null){
+        if (board.getPiece(startPosition) == null) {
             return null;
-        }
-        ChessPiece piece = board.getPiece(startPosition);
-        TeamColor myTeamColor = piece.getTeamColor();
-        Collection<ChessMove> checkMoves = piece.pieceMoves(board, startPosition);
-//        System.out.print(checkMoves);
-        Collection<ChessMove> returnMoves = piece.pieceMoves(board, startPosition);
-        ChessBoard backupBoard = board;
-        for(ChessMove move : checkMoves){
-            ChessPosition endPosition = move.getEndPosition();
-
-            board.addPiece(endPosition, piece);
-            board.addPiece(startPosition, null);
-            if(this.isInCheck(myTeamColor)){
-                returnMoves.remove(move);
+        } else {
+            ChessPiece myPiece = board.getPiece(startPosition);
+            TeamColor myTeamColor = myPiece.getTeamColor();
+            Collection<ChessMove> allMoves = myPiece.pieceMoves(board, startPosition);
+            Collection<ChessMove> returnMoves = new ArrayList<>();
+            for (ChessMove move : allMoves) {
+                returnMoves.add(move.clone());  // This uses the clone method you implemented
             }
-            ChessBoard board = backupBoard;
+            for (ChessMove move : allMoves){
+                //gotta make sure the board can be cloned
+            }
         }
-        return returnMoves;
+
     }
 
     /**
@@ -172,4 +168,9 @@ public class ChessGame {
     //constuctor -> getters and setters -> isincheck -> validMoves -> makeMove -> all the checks
     //override .clone
 
+
+    @Override
+    protected Object clone() throws CloneNotSupportedException {
+        return super.clone();
+    }
 }

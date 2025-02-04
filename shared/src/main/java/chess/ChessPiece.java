@@ -86,4 +86,14 @@ public class ChessPiece {
     public int hashCode() {
         return Objects.hash(pieceColor, type);
     }
+
+    @Override
+    public ChessPiece clone() {
+        try {
+            ChessPiece clonedPiece = (ChessPiece) super.clone();
+            return clonedPiece;
+        } catch (CloneNotSupportedException e) {
+            throw new AssertionError("Cloning not supported", e);
+        }
+    }
 }
