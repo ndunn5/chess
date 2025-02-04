@@ -53,21 +53,30 @@ public class ChessGame {
      * startPosition
      */
     public Collection<ChessMove> validMoves(ChessPosition startPosition) {
+        Collection<ChessMove> returnMoves = new ArrayList<>();
+        ChessPiece myPiece = board.getPiece(startPosition);
         if (board.getPiece(startPosition) == null) {
             return null;
-        } else {
-            ChessPiece myPiece = board.getPiece(startPosition);
+        }
+        else {
             TeamColor myTeamColor = myPiece.getTeamColor();
             Collection<ChessMove> allMoves = myPiece.pieceMoves(board, startPosition);
-            Collection<ChessMove> returnMoves = new ArrayList<>();
-            for (ChessMove move : allMoves) {
-                returnMoves.add(move.clone());  // This uses the clone method you implemented
-            }
+            ChessBoard originalBoard = board.clone();
             for (ChessMove move : allMoves){
                 //gotta make sure the board can be cloned
+                ChessPosition targetPosition = move.getEndPosition();
+                ChessPiece targetPiece = board.getPiece(targetPosition);
+                board.addPiece(targetPosition, myPiece);
+                board.addPiece(startPosition, null);
+                if(!isInCheck(myTeamColor)){
+                    returnMoves.add(move);
+                }
+                board.addPiece(startPosition, myPiece);
+                board.addPiece(targetPosition, targetPiece);
+//                this.setBoard(originalBoard);
             }
         }
-
+    return returnMoves;
     }
 
     /**
@@ -113,7 +122,7 @@ public class ChessGame {
                 if(currentPiece != null && currentPiece.getTeamColor() != teamColor){
                     Collection<ChessMove> moves = currentPiece.pieceMoves(board, currentPosition);
                     for(ChessMove move : moves){
-                        if(move.getEndPosition() == kingPosition){
+                        if(move.getEndPosition().equals(kingPosition)){
                             return true;
                         }
                     }
@@ -166,7 +175,7 @@ public class ChessGame {
         return board;
     }
     //constuctor -> getters and setters -> isincheck -> validMoves -> makeMove -> all the checks
-    //override .clone
+    override .clone
 
 
     @Override

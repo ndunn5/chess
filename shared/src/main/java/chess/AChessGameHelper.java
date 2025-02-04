@@ -8,7 +8,7 @@ public class AChessGameHelper {
             for(int col = 1; col <= 8; col++){
                 currentPosition = new ChessPosition(row, col);
                 currentPiece = board.getPiece(currentPosition);
-                if(currentPiece.getTeamColor() == teamColor && currentPiece.getPieceType() == ChessPiece.PieceType.KING){
+                if(currentPiece != null && currentPiece.getTeamColor() == teamColor && currentPiece.getPieceType() == ChessPiece.PieceType.KING){
                     return currentPosition;
                 }
             }
