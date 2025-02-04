@@ -160,9 +160,11 @@ public class ChessGame {
                 for(int col = 1; col <= 8; col++){
                     ChessPosition currentPosition = new ChessPosition(row, col);
                     currentPiece = board.getPiece(currentPosition);
-                    Collection<ChessMove> currentMoves = validMoves(currentPosition);
-                    if(currentPiece.getTeamColor() == teamColor && !currentMoves.isEmpty()){
-                        return false;
+                    if(currentPiece != null){
+                        Collection<ChessMove> currentMoves = validMoves(currentPosition);
+                        if(currentPiece.getTeamColor() == teamColor && !currentMoves.isEmpty()){
+                            return false;
+                        }
                     }
                 }
             }
@@ -179,14 +181,23 @@ public class ChessGame {
      */
     public boolean isInStalemate(TeamColor teamColor) {
         ChessPosition kingPosition = AChessGameHelper.findKingPosition(board, teamColor);
-        if(!isInCheck(teamColor) && validMoves(kingPosition).isEmpty()){
-            return true;
+        ChessPiece currentPiece;
+        if (!isInCheck(teamColor)) {
+            for (int row = 1; row <= 8; row++) {
+                for (int col = 1; col <= 8; col++) {
+                    ChessPosition currentPosition = new ChessPosition(row, col);
+                    currentPiece = board.getPiece(currentPosition);
+                    if (currentPiece != null){
+                        Collection<ChessMove> currentMoves = validMoves(currentPosition);
+                        if (currentPiece.getTeamColor() == teamColor && !currentMoves.isEmpty()) {
+                            return false;
+                        }
+                    }
+                }
+            }
         }
-        else{
-            return false;
-        }
+        return true;
     }
-
     /**
      * Sets this game's chessboard with a given board
      *
