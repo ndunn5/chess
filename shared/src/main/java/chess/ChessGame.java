@@ -180,7 +180,9 @@ public class ChessGame {
      * @return True if the specified team is in stalemate, otherwise false
      */
     public boolean isInStalemate(TeamColor teamColor) {
-        ChessPosition kingPosition = AChessGameHelper.findKingPosition(board, teamColor);
+        if(isInCheck(teamColor)){
+            return false;
+        }
         ChessPiece currentPiece;
         if (!isInCheck(teamColor)) {
             for (int row = 1; row <= 8; row++) {
@@ -188,9 +190,11 @@ public class ChessGame {
                     ChessPosition currentPosition = new ChessPosition(row, col);
                     currentPiece = board.getPiece(currentPosition);
                     if (currentPiece != null){
-                        Collection<ChessMove> currentMoves = validMoves(currentPosition);
-                        if (currentPiece.getTeamColor() == teamColor && !currentMoves.isEmpty()) {
-                            return false;
+                        if (currentPiece.getTeamColor() == teamColor) {
+                            Collection<ChessMove> currentMoves = validMoves(currentPosition);
+                            if(!currentMoves.isEmpty()){
+                                return false;
+                            }
                         }
                     }
                 }
