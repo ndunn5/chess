@@ -130,4 +130,9 @@ public class ChessBoard {
                 "board=" + Arrays.toString(board) +
                 '}';
     }
+
+    @Override
+    protected Object clone() throws CloneNotSupportedException {
+        return super.clone();
+    }
 }
