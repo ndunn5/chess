@@ -88,11 +88,16 @@ public class ChessGame {
     public void makeMove(ChessMove move) throws InvalidMoveException {
         ChessPosition startPosition = move.getStartPosition();
         ChessPosition endPosition = move.getEndPosition();
+        if(board.getPiece(startPosition) == null){
+            throw new InvalidMoveException("you dont got no piece");
+        }
         ChessPiece piece = board.getPiece(startPosition);
         if (!this.validMoves(startPosition).contains(move)) {
             throw new InvalidMoveException("Invalid move dude");
         }
-
+        if(getTeamTurn() != piece.getTeamColor()){
+            throw new InvalidMoveException("wait yo turn");
+        }
         if (move.getPromotionPiece() != null){
             board.addPiece(endPosition, new ChessPiece(piece.getTeamColor(), move.getPromotionPiece()));
         }
@@ -100,6 +105,12 @@ public class ChessGame {
             board.addPiece(endPosition, piece);
         }
         board.addPiece(startPosition, null);
+        if(currentTurn == TeamColor.WHITE){
+            setTeamTurn(TeamColor.BLACK);
+        }
+        else{
+            setTeamTurn(TeamColor.WHITE);
+        }
     }
 
     /**
@@ -175,7 +186,7 @@ public class ChessGame {
         return board;
     }
     //constuctor -> getters and setters -> isincheck -> validMoves -> makeMove -> all the checks
-    override .clone
+//    override .clone
 
 
     @Override
