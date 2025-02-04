@@ -151,12 +151,23 @@ public class ChessGame {
      */
     public boolean isInCheckmate(TeamColor teamColor) {
         ChessPosition kingPosition = AChessGameHelper.findKingPosition(board, teamColor);
-        if(isInCheck(teamColor) && validMoves(kingPosition).isEmpty()){
-            return true;
-        }
-        else{
+        ChessPiece currentPiece;
+        if(!isInCheck(teamColor)){
             return false;
         }
+        else{ //lets loop through these bad boys
+            for(int row = 1; row <= 8; row++){
+                for(int col = 1; col <= 8; col++){
+                    ChessPosition currentPosition = new ChessPosition(row, col);
+                    currentPiece = board.getPiece(currentPosition);
+                    Collection<ChessMove> currentMoves = validMoves(currentPosition);
+                    if(currentPiece.getTeamColor() == teamColor && !currentMoves.isEmpty()){
+                        return false;
+                    }
+                }
+            }
+        }
+        return true;
     }
 
     /**
