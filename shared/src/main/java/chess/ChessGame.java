@@ -11,6 +11,11 @@ import java.util.Objects;
  * Note: You can add to this class, but you may not alter
  * signature of the existing methods.
  */
+
+//start with dataacsess-> Data model classes -> makerequest and result classes
+//getting started in phase 3 FOLLOW STEP BY STEP
+//for testing endpoints
+//localhose:8080 to run the temporary frontend
 public class ChessGame {
 
     private ChessBoard board;
