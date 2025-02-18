@@ -5,7 +5,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class AuthDAO {
-    private final Map<String, AuthData> authTokens = new HashMap<>();
+    private Map<String, AuthData> authTokens = new HashMap<>();
 
     public void insertAuth(AuthData auth) throws DataAccessException{
         authTokens.put(auth.authToken(), auth);
@@ -13,6 +13,10 @@ public class AuthDAO {
 
     public AuthData getAuth(String authToken) {
         return authTokens.get(authToken);
+    }
+
+    public Map<String, AuthData> getAllAuthTokens(){
+        return authTokens;
     }
 
     public boolean deleteAuth(String authToken) {
