@@ -14,4 +14,14 @@ public class AuthDAO {
     public AuthData getAuth(String authToken) {
         return authTokens.get(authToken);
     }
+
+    public boolean deleteAuth(String authToken) {
+        if(authTokens.containsKey(authToken)){
+            authTokens.remove((authToken));
+            return true;
+        }
+        else{
+            return false;
+        }
+    }
 }
