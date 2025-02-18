@@ -8,7 +8,7 @@ public class GameDAO {
     private int nextGameID = 1;
     private Map<Integer, GameData> allGames = new HashMap<>();
 
-    public int insertGame(GameData game){
+    public int insertGame(GameData game) throws DataAccessException{
         int thisGameID = nextGameID;
         allGames.put(thisGameID, new GameData(thisGameID, game.whiteUsername(), game.blackUsername(), game.gameName(), game.game()));
         nextGameID ++;

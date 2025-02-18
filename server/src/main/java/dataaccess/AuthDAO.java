@@ -7,7 +7,7 @@ import java.util.Map;
 public class AuthDAO {
     private final Map<String, AuthData> authTokens = new HashMap<>();
 
-    public void insertAuth(AuthData auth) {
+    public void insertAuth(AuthData auth) throws DataAccessException{
         authTokens.put(auth.authToken(), auth);
     }
 

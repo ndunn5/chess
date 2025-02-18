@@ -6,7 +6,7 @@ import java.util.Map;
 public class UserDAO {
     private Map<String, UserData> users = new HashMap<>();
 
-    public void insertUser(UserData user) {
+    public void insertUser(UserData user) throws DataAccessException{
         users.put(user.username(), user);
     }
 
