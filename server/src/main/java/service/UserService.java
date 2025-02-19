@@ -1,10 +1,14 @@
 package service;
-import model.LoginRequest;
-import model.RegisterRequest;
-import model.LogoutRequest;
 
-//public class UserService {
-//    public RegisterResult register(RegisterRequest registerRequest) {}
-//    public LoginResult login(LoginRequest loginRequest) {}
-//    public void logout(LogoutRequest logoutRequest) {}
-//}
+import dataaccess.UserDAO;
+import model.GameData;
+
+
+public class UserService {
+    private UserDAO userDAO;
+
+    public UserService(UserDAO userDAO){
+        this.userDAO = userDAO;
+    }
+}
+
