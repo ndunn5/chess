@@ -13,4 +13,14 @@ public class ClearService {
         this.gameDAO = gameDAO;
         this.authDAO = authDAO;
     }
+
+    public void clear() throws Exception{
+        try {
+            userDAO.clear();
+            gameDAO.clear();
+            authDAO.clear();
+        } catch (Exception e){
+            throw new Exception("Error with clearing data. Message: " + e.getMessage());
+        }
+    }
 }

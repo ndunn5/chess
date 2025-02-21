@@ -27,4 +27,10 @@ public class UserDAO {
             return false;
         }
     }
+
+    public void clear(){
+        users.clear();
+    }
+
+
 }

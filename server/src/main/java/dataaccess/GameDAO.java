@@ -39,4 +39,8 @@ public class GameDAO {
         return allGames;
     }
 
+    public void clear(){
+        allGames.clear();
+    }
+
 }

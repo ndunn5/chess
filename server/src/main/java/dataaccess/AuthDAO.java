@@ -28,4 +28,8 @@ public class AuthDAO {
             return false;
         }
     }
+
+    public void clear(){
+        authTokens.clear();
+    }
 }
