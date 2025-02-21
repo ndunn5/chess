@@ -14,13 +14,15 @@ public class ClearService {
         this.authDAO = authDAO;
     }
 
-    public void clear() throws Exception{
+    public boolean clear(){
         try {
             userDAO.clear();
             gameDAO.clear();
             authDAO.clear();
+            return true;
         } catch (Exception e){
-            throw new Exception("Error with clearing data. Message: " + e.getMessage());
+            System.out.print("Error with clearing data. Message: " + e.getMessage());
+            return false;
         }
     }
 }
