@@ -1,11 +1,13 @@
 package server;
 
+import service.ClearDatabaseResult;
 import spark.*;
 import static spark.Spark.*;
 import service.ClearService;
 import dataaccess.UserDAO;
 import dataaccess.GameDAO;
 import dataaccess.AuthDAO;
+import service.ClearDatabaseRequest;
 
 public class Server {
 
@@ -26,14 +28,16 @@ public class Server {
 
 
         delete("/db", (request, response) ->{
-            boolean sucess = clearService.clear();
-            if (sucess) {
-                response.status(200);
-                return "{}";
+            ClearDatabaseRequest clearDatabaseRequest = new ClearDatabaseRequest();
+            ClearDatabaseResult result = clearService.clear(clearDatabaseRequest);
+
+            response.status(result.getStatusCode());
+            if (result.getStatusCode() == 200) {
+                response.body("{}");
             } else {
-                response.status(500);
-                return "{ \"message\": \"Error: (description of error)\" }";
+                response.body("{\"message\": \"" + result.getErrorMessage() + "\"}");
             }
+            return response.body();
         });
 
         Spark.init();
