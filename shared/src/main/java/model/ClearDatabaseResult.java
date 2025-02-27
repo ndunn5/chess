@@ -1,4 +1,4 @@
-package service;
+package model;
 
 public class ClearDatabaseResult {
     private int statusCode;

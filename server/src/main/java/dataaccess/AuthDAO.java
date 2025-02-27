@@ -3,30 +3,33 @@ package dataaccess;
 import model.AuthData;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 public class AuthDAO {
-    private Map<String, AuthData> authTokens = new HashMap<>();
+
+    private Map<String, String> usernames = new HashMap<>();
+    private Map<String, String> authTokens = new HashMap<>();
 
     public void insertAuth(AuthData auth) throws DataAccessException{
-        authTokens.put(auth.authToken(), auth);
+        usernames.put(auth.username(), auth.authToken());
+        authTokens.put(auth.authToken(), auth.username());
     }
 
-    public AuthData getAuth(String authToken) {
+    public String getAuthTokenWithUsername(String username) {
+        return usernames.get(username);
+    }
+
+    public String getUsernameWithAuthToken(String authToken) {
         return authTokens.get(authToken);
     }
 
-    public Map<String, AuthData> getAllAuthTokens(){
-        return authTokens;
-    }
-
     public boolean deleteAuth(String authToken) {
-        if(authTokens.containsKey(authToken)){
-            authTokens.remove((authToken));
+        String returnUsername = authTokens.remove(authToken);
+        if (returnUsername != null) {
+            usernames.remove(returnUsername);
             return true;
         }
-        else{
-            return false;
-        }
+        return false;
     }
 
     public void clear(){

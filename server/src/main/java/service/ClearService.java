@@ -3,6 +3,8 @@ package service;
 import dataaccess.UserDAO;
 import dataaccess.GameDAO;
 import dataaccess.AuthDAO;
+import model.ClearDatabaseRequest;
+import model.ClearDatabaseResult;
 
 public class ClearService {
     private UserDAO userDAO;

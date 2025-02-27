@@ -12,11 +12,8 @@ public class AuthService {
         this.authDAO = authDAO;
     }
 
-    public String generateAuthToken(){
+    public static String generateAuthToken() {
         return UUID.randomUUID().toString();
     }
 
-//    public void clear(String authToken) throws dataaccess.DataAccessException {
-//
-//    }
 }
