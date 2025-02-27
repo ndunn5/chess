@@ -55,7 +55,21 @@ public class Server {
             RegisterRequest registerRequest = new Gson().fromJson(request.body(), RegisterRequest.class);
             RegisterResult result = registerService.register(registerRequest);
 
-            response.status(result.statusCode());
+            if(result.message() == null){
+                response.status(200);
+            }
+            else{
+                switch(result.message()){
+                    case "Error: bad request":
+                        response.status(400);
+                        break;
+                    case "Error: already taken" :
+                        response.status(403);
+                        break;
+                    default:
+                        response.status(500);
+                }
+            }
             return new Gson().toJson(result);
         });
 
