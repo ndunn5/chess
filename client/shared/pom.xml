@@ -2,36 +2,42 @@
 <project>
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>edu.byu.cs240</groupId>
-    <artifactId>chess</artifactId>
+    <artifactId>shared</artifactId>
     <version>1.0.0</version>
 
-    <properties>
-        <maven.compiler.source>21</maven.compiler.source>
-        <maven.compiler.target>21</maven.compiler.target>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    </properties>
+    <parent>
+        <artifactId>chess</artifactId>
+        <groupId>edu.byu.cs240</groupId>
+        <version>1.0.0</version>
+    </parent>
 
-    <packaging>pom</packaging>
+    <packaging>jar</packaging>
 
-    <modules>
-        <module>shared</module>
-        <module>client</module>
-        <module>server</module>
-    </modules>
+    <dependencies>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-api</artifactId>
+            <version>5.11.2</version>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
 
-<<<<<<< HEAD
-=======
     <build>
-        <finalName>client</finalName>
+        <finalName>shared</finalName>
         <plugins>
             <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>exec-maven-plugin</artifactId>
-                <version>3.1.1</version>
-                <configuration>
-                    <mainClass>server.Main</mainClass>
-                </configuration>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <version>2.2</version>
+                <executions>
+                    <execution>
+                        <id>Jar Tests Package</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>test-jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -60,18 +66,6 @@
             </plugin>
         </plugins>
     </build>
->>>>>>> 696da66 (try again)
 
-    <dependencies>
-        <dependency>
-            <groupId>com.google.code.gson</groupId>
-            <artifactId>gson</artifactId>
-            <version>2.10.1</version>
-        </dependency>
-        <dependency>
-            <groupId>org.junit.jupiter</groupId>
-            <artifactId>junit-jupiter</artifactId>
-            <version>5.9.2</version>
-        </dependency>
-    </dependencies>
+
 </project>

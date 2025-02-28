@@ -9,6 +9,7 @@ import passoff.model.*;
 import passoff.server.TestServerFacade;
 import server.Server;
 import static org.junit.jupiter.api.Assertions.*;
+import com.google.gson.Gson;
 
 import java.net.HttpURLConnection;
 import java.util.Arrays;
@@ -52,6 +53,26 @@ public class PersonalAPITests {
         assertTrue(userDAO.isEmpty(), "user failed");
         assertTrue(gameDAO.isEmpty(), "game failed");
         assertTrue(authDAO.isEmpty(), "auth failed");
+    }
+
+    @Test
+    @DisplayName("Register Service Positive")
+    public void registerServicePositive() throws DataAccessException {
+        RegisterService registerService = new RegisterService(userDAO, authDAO);
+        RegisterRequest testRegisterRequest = new RegisterRequest("noah","dunn", "gmail");
+        RegisterResult testResult = registerService.register(testRegisterRequest);
+
+        assertNull(testResult.message());
+    }
+
+    @Test
+    @DisplayName("Register Service Negative")
+    public void registerServiceNegative() throws DataAccessException {
+        RegisterService registerService = new RegisterService(userDAO, authDAO);
+        RegisterRequest testRegisterRequest = new RegisterRequest("noah","", "gmail");
+        RegisterResult testResult = registerService.register(testRegisterRequest);
+
+        assertNotNull(testResult.message());
     }
 
 }
