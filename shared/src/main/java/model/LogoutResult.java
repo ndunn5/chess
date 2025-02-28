@@ -1,3 +1,3 @@
 package model;
 
-public record LogoutResult(String authTokenOrMessage) {}
+public record LogoutResult(String message) {}
