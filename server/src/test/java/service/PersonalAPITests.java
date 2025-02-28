@@ -142,5 +142,17 @@ public class PersonalAPITests {
         assertNotNull(testListGamesResult.games());
     }
 
+    @Test
+    @DisplayName("List Games Service Negative")
+    public void listGamesNegative() throws DataAccessException {
+        RegisterRequest testRegisterRequest = new RegisterRequest("noah","dunn", "gmail");
+        registerService.register(testRegisterRequest);
+        LoginResult testLoginResult = loginService.login(new LoginRequest(testRegisterRequest.username(),"dunn"));
+        gameDAO.insertGame(new GameData(12345, "jimothy", "asterics", "alabama", new ChessGame()));
+        ListGamesResult testListGamesResult = listGameService.listGames(new ListGamesRequest("wrongAuthToken"));
+
+        assertNotNull(testListGamesResult.message());
+    }
+
 }
 
