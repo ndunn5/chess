@@ -27,6 +27,9 @@ public class JoinGameService {
         if (gameData == null) {
             return new JoinGameResult("Error: bad request");
         }
+        if (joinGameRequest.getPlayerColor() == null || !joinGameRequest.getPlayerColor().equals("BLACK") || !joinGameRequest.getPlayerColor().equals("WHITE") ){
+            return new JoinGameResult("Error: bad request");
+        }
         try {
             if(joinGameRequest.getPlayerColor().equals("WHITE")){
                 if(gameData.whiteUsername() != null){
