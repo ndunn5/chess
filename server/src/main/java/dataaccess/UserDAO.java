@@ -32,5 +32,9 @@ public class UserDAO {
         users.clear();
     }
 
+    public boolean isEmpty(){
+        return users.isEmpty();
+    }
+
 
 }

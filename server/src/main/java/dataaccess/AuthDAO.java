@@ -32,7 +32,12 @@ public class AuthDAO {
         return false;
     }
 
+    public boolean isEmpty(){
+        return usernames.isEmpty();
+    }
+
     public void clear(){
         authTokens.clear();
+        usernames.clear();
     }
 }

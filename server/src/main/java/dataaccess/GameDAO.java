@@ -43,4 +43,8 @@ public class GameDAO {
         allGames.clear();
     }
 
+    public boolean isEmpty(){
+        return allGames.isEmpty();
+    }
+
 }
