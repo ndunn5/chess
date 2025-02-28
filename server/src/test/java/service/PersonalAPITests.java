@@ -33,6 +33,8 @@ public class PersonalAPITests {
     private LoginService loginService;
     private LogoutService logoutService;
     private ListGameService listGameService;
+    private CreateGameService createGameService;
+    private JoinGameService joinGameService;
 
     @BeforeEach
     void setUp() {
@@ -45,6 +47,8 @@ public class PersonalAPITests {
         this.loginService = new LoginService(authDAO);
         this.logoutService = new LogoutService(authDAO);
         this.listGameService = new ListGameService(gameDAO, authDAO);
+        this.createGameService = new CreateGameService(gameDAO, authDAO);
+        this.joinGameService = new JoinGameService(gameDAO, authDAO);
     }
 
     @Test
@@ -154,5 +158,54 @@ public class PersonalAPITests {
         assertNotNull(testListGamesResult.message());
     }
 
+    @Test
+    @DisplayName("Create Games Service Positive")
+    public void createGamesPositive() throws DataAccessException {
+        String gameName = "babySharkDooDoo";
+        RegisterRequest testRegisterRequest = new RegisterRequest("noah","dunn", "gmail");
+        registerService.register(testRegisterRequest);
+        LoginResult testLoginResult = loginService.login(new LoginRequest(testRegisterRequest.username(),"dunn"));
+        CreateGameResult testCreateGameResult = createGameService.createGame(new CreateGameRequest(testLoginResult.authToken(), gameName));
+
+        assertNull(testCreateGameResult.message());
+    }
+
+    @Test
+    @DisplayName("Create Games Service Negative")
+    public void createGamesNegative() throws DataAccessException {
+        String gameName = "babySharkDooDoo";
+        RegisterRequest testRegisterRequest = new RegisterRequest("noah","dunn", "gmail");
+        registerService.register(testRegisterRequest);
+        LoginResult testLoginResult = loginService.login(new LoginRequest(testRegisterRequest.username(),"dunn"));
+        CreateGameResult testCreateGameResult = createGameService.createGame(new CreateGameRequest(gameName, gameName));
+
+        assertNotNull(testCreateGameResult.message());
+    }
+
+    @Test
+    @DisplayName("Join Game Service Positive")
+    public void joinGamePositive() throws DataAccessException {
+        registerService.register(new RegisterRequest("noah", "dunn", "gmail"));
+        LoginResult loginResult = loginService.login(new LoginRequest("noah", "dunn"));
+        CreateGameResult gameResult = createGameService.createGame(new CreateGameRequest(loginResult.authToken(), "babySharkDooDoo"));
+        JoinGameRequest testJoinGameRequest = new JoinGameRequest("WHITE", gameResult.gameID());
+        testJoinGameRequest.addAuthToken(loginResult.authToken());
+        JoinGameResult joinResult = joinGameService.joinGame(testJoinGameRequest);
+
+        assertNull(joinResult.message());
+    }
+
+    @Test
+    @DisplayName("Join Game Service Negative")
+    public void joinGameNegative() throws DataAccessException {
+        registerService.register(new RegisterRequest("noah", "dunn", "gmail"));
+        LoginResult loginResult = loginService.login(new LoginRequest("noah", "dunn"));
+        CreateGameResult gameResult = createGameService.createGame(new CreateGameRequest(loginResult.authToken(), "babySharkDooDoo"));
+        JoinGameRequest testJoinGameRequest = new JoinGameRequest("WHITE", gameResult.gameID());
+//        testJoinGameRequest.addAuthToken(loginResult.authToken());
+        JoinGameResult joinResult = joinGameService.joinGame(testJoinGameRequest);
+
+        assertNotNull(joinResult.message());
+    }
 }
 
