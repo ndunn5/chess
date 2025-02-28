@@ -47,7 +47,8 @@ public class AChessHelper {
 
     public static Collection<ChessMove> promotePawn(ChessPiece myPawn, ChessPosition myPosition, ChessPosition currentPosition) {
         Collection<ChessMove> moves = new ArrayList<>();
-        if ((myPawn.getTeamColor() == ChessGame.TeamColor.WHITE && myPosition.getRow() == 7) || (myPawn.getTeamColor() == ChessGame.TeamColor.BLACK && myPosition.getRow() == 2)){
+        if ((myPawn.getTeamColor() == ChessGame.TeamColor.WHITE && myPosition.getRow() == 7) ||
+                (myPawn.getTeamColor() == ChessGame.TeamColor.BLACK && myPosition.getRow() == 2)){
             moves.add(new ChessMove(myPosition, currentPosition, ChessPiece.PieceType.QUEEN));
             moves.add(new ChessMove(myPosition, currentPosition, ChessPiece.PieceType.ROOK));
             moves.add(new ChessMove(myPosition, currentPosition, ChessPiece.PieceType.KNIGHT));
