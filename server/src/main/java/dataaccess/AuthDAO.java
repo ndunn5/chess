@@ -10,28 +10,24 @@ import java.util.UUID;
 public class AuthDAO {
 
     private Map<String, UserData> usernames = new HashMap<>();
-    private Map<String, String> authTokens = new HashMap<>();
+    private Map<String, AuthData> authTokens = new HashMap<>();
 
     public void insertAuth(AuthData auth, UserData user) throws DataAccessException{
         usernames.put(auth.username(), user);
-        authTokens.put(auth.authToken(), auth.username());
+        authTokens.put(auth.authToken(), auth);
     }
 
     public UserData getUserDataWithUsername(String username) {
         return usernames.get(username);
     }
 
-    public String getUsernameWithAuthToken(String authToken) {
+    public AuthData getAuthDataWithAuthToken(String authToken) {
         return authTokens.get(authToken);
     }
 
-    public boolean deleteAuth(String authToken) {
-        String returnUsername = authTokens.remove(authToken);
-        if (returnUsername != null) {
-            usernames.remove(returnUsername);
-            return true;
-        }
-        return false;
+    public void deleteAuth(AuthData auth, UserData user) {
+        authTokens.remove(auth.authToken());
+        usernames.remove(user.username());
     }
 
     public boolean isEmpty(){

@@ -4,15 +4,15 @@ import model.GameData;
 import java.util.HashMap;
 import java.util.Map;
 
+import java.util.List;
+import java.util.ArrayList;
+
+
 public class GameDAO {
-    private int nextGameID = 1;
     private Map<Integer, GameData> allGames = new HashMap<>();
 
-    public int insertGame(GameData game) throws DataAccessException{
-        int thisGameID = nextGameID;
-        allGames.put(thisGameID, new GameData(thisGameID, game.whiteUsername(), game.blackUsername(), game.gameName(), game.game()));
-        nextGameID ++;
-        return thisGameID;
+    public void insertGame(GameData game) throws DataAccessException{
+        allGames.put(game.gameID(), new GameData(game.gameID(), game.whiteUsername(), game.blackUsername(), game.gameName(), game.game()));
     }
 
     public GameData getGame(int gameID){
@@ -35,8 +35,20 @@ public class GameDAO {
         }
     }
 
-    public Map<Integer, GameData> returnAllGames(){
-        return allGames;
+    public List<Map<String, Object>> returnAllGames() {
+        List<Map<String, Object>> gamesList = new ArrayList<>();
+
+        for (GameData game : allGames.values()) {
+            Map<String, Object> gameMap = new HashMap<>();
+            gameMap.put("gameID", game.gameID());
+            gameMap.put("whiteUsername", game.whiteUsername());
+            gameMap.put("blackUsername", game.blackUsername());
+            gameMap.put("gameName", game.gameName());
+            gameMap.put("game", game.game());
+            gamesList.add(gameMap);
+        }
+
+        return gamesList;
     }
 
     public void clear(){
