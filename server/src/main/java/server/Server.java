@@ -132,7 +132,7 @@ public class Server {
 
         post("/game", (request, response) ->{
             String authToken = request.headers("authorization");
-            String gameName = new Gson().fromJson(request.body(), CreateGameRequest.class).toString();
+            String gameName = new Gson().fromJson(request.body(), CreateGameRequest.class).gameName();
             CreateGameRequest createGameRequest = new CreateGameRequest(authToken, gameName);
             CreateGameResult createGameResult = createGameService.createGame(createGameRequest);
 
