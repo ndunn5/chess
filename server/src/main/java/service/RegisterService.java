@@ -40,7 +40,7 @@ public class RegisterService {
 
             String authToken = AuthService.generateAuthToken();
             AuthData authData = new AuthData(authToken, registerRequest.username());
-            authDAO.insertAuth(authData);
+            authDAO.insertAuth(authData, userData);
 
             return new RegisterResult(registerRequest.username(), authToken);
         } catch (DataAccessException e) {

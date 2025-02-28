@@ -44,9 +44,12 @@ public class PersonalAPITests {
     @Test
     @DisplayName("Clear Service Positive")
     public void clearServicePositive() throws DataAccessException {
-        userDAO.insertUser(new UserData("noah","dunn", "gmail"));
+        UserData testUser = new UserData("noah","dunn", "gmail");
+        AuthData testData = new AuthData("m1thousandmilesanhour", "noah");
+        userDAO.insertUser(testUser);
         gameDAO.insertGame(new GameData(12345, "eden", "beazer", "sewingGame", new ChessGame()));
-        authDAO.insertAuth(new AuthData("m1thousandmilesanhour", "theGorillaz"));
+        authDAO.insertAuth(testData, testUser);
+
 
         clearService.clear(new ClearDatabaseRequest());
 
@@ -71,6 +74,30 @@ public class PersonalAPITests {
         RegisterService registerService = new RegisterService(userDAO, authDAO);
         RegisterRequest testRegisterRequest = new RegisterRequest("noah","", "gmail");
         RegisterResult testResult = registerService.register(testRegisterRequest);
+
+        assertNotNull(testResult.message());
+    }
+
+    @Test
+    @DisplayName("Login Service Positive")
+    public void LoginServicePositive() throws DataAccessException {
+        RegisterService registerService = new RegisterService(userDAO, authDAO);
+        RegisterRequest testRegisterRequest = new RegisterRequest("noah","dunn", "gmail");
+        RegisterResult registerResult = registerService.register(testRegisterRequest);
+
+        LoginService loginService = new LoginService(authDAO);
+        LoginRequest testLoginRequest = new LoginRequest("noah", "dunn");
+        LoginResult testResult = loginService.login(testLoginRequest);
+
+        assertNull(testResult.message());
+    }
+
+    @Test
+    @DisplayName("Login Service Negative")
+    public void LoginServiceNegative() throws DataAccessException {
+        LoginService loginService = new LoginService(authDAO);
+        LoginRequest testLoginRequest = new LoginRequest("noah", "dunn");
+        LoginResult testResult = loginService.login(testLoginRequest);
 
         assertNotNull(testResult.message());
     }

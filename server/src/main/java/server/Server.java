@@ -1,15 +1,12 @@
 package server;
 
-import model.RegisterResult;
+import model.*;
+import service.LoginService;
 import service.RegisterService;
 import spark.*;
 import static spark.Spark.*;
 
 import service.ClearService;
-import model.ClearDatabaseRequest;
-import model.ClearDatabaseResult;
-
-import model.RegisterRequest;
 
 
 import dataaccess.UserDAO;
@@ -22,6 +19,7 @@ public class Server {
 
     private ClearService clearService;
     private RegisterService registerService;
+    private LoginService loginService;
 
     public Server() {
         UserDAO userDAO = new UserDAO();
@@ -30,6 +28,7 @@ public class Server {
 
         this.clearService = new ClearService(userDAO, gameDAO, authDAO);
         this.registerService = new RegisterService(userDAO, authDAO);
+        this.loginService = new LoginService(authDAO);
     }
 
     public int run(int desiredPort) {
@@ -65,6 +64,25 @@ public class Server {
                         break;
                     case "Error: already taken" :
                         response.status(403);
+                        break;
+                    default:
+                        response.status(500);
+                }
+            }
+            return new Gson().toJson(result);
+        });
+
+        post("/session", (request, response) ->{
+            LoginRequest loginRequest = new Gson().fromJson(request.body(), LoginRequest.class);
+            LoginResult result = loginService.login(loginRequest);
+
+            if (result.message() == null){
+                response.status(200);
+            }
+            else{
+                switch(result.message()){
+                    case("Error: unauthorized"):
+                        response.status(401);
                         break;
                     default:
                         response.status(500);
