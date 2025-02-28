@@ -125,6 +125,7 @@ public class ChessGame {
      * @param teamColor which team to check for check
      * @return True if the specified team is in check
      */
+    
 
 
 
@@ -136,13 +137,20 @@ public class ChessGame {
             for(int col = 1; col <= 8; col++){
                 currentPosition = new ChessPosition(row, col);
                 currentPiece = board.getPiece(currentPosition);
-                if(currentPiece != null && currentPiece.getTeamColor() != teamColor){
-                    Collection<ChessMove> moves = currentPiece.pieceMoves(board, currentPosition);
-                    for(ChessMove move : moves){
-                        if(move.getEndPosition().equals(kingPosition)){
-                            return true;
-                        }
-                    }
+                if (canPieceKillKing(teamColor, currentPiece, currentPosition, kingPosition)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    private boolean canPieceKillKing(TeamColor teamColor, ChessPiece currentPiece, ChessPosition currentPosition, ChessPosition kingPosition) {
+        if(currentPiece != null && currentPiece.getTeamColor() != teamColor){
+            Collection<ChessMove> moves = currentPiece.pieceMoves(board, currentPosition);
+            for(ChessMove move : moves){
+                if(move.getEndPosition().equals(kingPosition)){
+                    return true;
                 }
             }
         }
