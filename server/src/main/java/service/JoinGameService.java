@@ -1,5 +1,6 @@
 package service;
 
+import chess.ChessGame;
 import dataaccess.AuthDAO;
 import dataaccess.GameDAO;
 import model.AuthData;
@@ -27,7 +28,7 @@ public class JoinGameService {
         if (gameData == null) {
             return new JoinGameResult("Error: bad request");
         }
-        if (joinGameRequest.getPlayerColor() == null || !joinGameRequest.getPlayerColor().equals("BLACK") || !joinGameRequest.getPlayerColor().equals("WHITE") ){
+        if (joinGameRequest.getPlayerColor() == null){
             return new JoinGameResult("Error: bad request");
         }
         try {
@@ -36,11 +37,14 @@ public class JoinGameService {
                     return new JoinGameResult("Error: already taken");
                 }
                 gameData = new GameData(gameData.gameID(), authDAO.getAuthDataWithAuthToken(joinGameRequest.getAuthToken()).username(), gameData.blackUsername(), gameData.gameName(), gameData.game());
-            }else{
+            }else if (joinGameRequest.getPlayerColor().equals("BLACK")){
                 if(gameData.blackUsername() != null){
                     return new JoinGameResult("Error: already taken");
                 }
                 gameData = new GameData(gameData.gameID(), gameData.whiteUsername() , authDAO.getAuthDataWithAuthToken(joinGameRequest.getAuthToken()).username(), gameData.gameName(), gameData.game());
+            }
+            else{
+                return new JoinGameResult("Error: bad request");
             }
             gameDAO.updateGame(gameData);
             return new JoinGameResult();
