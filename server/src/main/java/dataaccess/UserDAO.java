@@ -14,20 +14,6 @@ public class UserDAO {
         return users.get(username);
     }
 
-    public Map<String, UserData> getAllUsers(){
-        return users;
-    }
-
-    public boolean deleteUser(String username) {
-        if(users.containsKey(username)){
-            users.remove((username));
-            return true;
-        }
-        else{
-            return false;
-        }
-    }
-
     public void clear(){
         users.clear();
     }

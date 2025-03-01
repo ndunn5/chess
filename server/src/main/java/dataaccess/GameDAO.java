@@ -19,15 +19,6 @@ public class GameDAO {
         return allGames.get(gameID);
     }
 
-    public boolean deleteGame(int gameID){
-        if(allGames.containsKey(gameID)){
-            allGames.remove(gameID);
-            return true;
-        }
-        else{
-            return false;
-        }
-    }
 
     public void updateGame(GameData game){
         if (allGames.containsKey(game.gameID())){
