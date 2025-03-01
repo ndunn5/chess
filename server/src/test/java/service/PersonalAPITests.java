@@ -202,7 +202,6 @@ public class PersonalAPITests {
         LoginResult loginResult = loginService.login(new LoginRequest("noah", "dunn"));
         CreateGameResult gameResult = createGameService.createGame(new CreateGameRequest(loginResult.authToken(), "babySharkDooDoo"));
         JoinGameRequest testJoinGameRequest = new JoinGameRequest("WHITE", gameResult.gameID());
-//        testJoinGameRequest.addAuthToken(loginResult.authToken());
         JoinGameResult joinResult = joinGameService.joinGame(testJoinGameRequest);
 
         assertNotNull(joinResult.message());
