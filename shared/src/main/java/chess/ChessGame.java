@@ -194,20 +194,28 @@ public class ChessGame {
         if (!isInCheck(teamColor)) {
             for (int row = 1; row <= 8; row++) {
                 for (int col = 1; col <= 8; col++) {
-                    ChessPosition currentPosition = new ChessPosition(row, col);
-                    currentPiece = board.getPiece(currentPosition);
-                    if (currentPiece != null) {
-                        if (currentPiece.getTeamColor() == teamColor) {
-                            Collection<ChessMove> currentMoves = validMoves(currentPosition);
-                            if (!currentMoves.isEmpty()) {
-                                return false;
-                            }
-                        }
+                    if (canMakeMove(teamColor, row, col)) {
+                        return false;
                     }
                 }
             }
         }
         return true;
+    }
+
+    private boolean canMakeMove(TeamColor teamColor, int row, int col) {
+        ChessPiece currentPiece;
+        ChessPosition currentPosition = new ChessPosition(row, col);
+        currentPiece = board.getPiece(currentPosition);
+        if (currentPiece != null) {
+            if (currentPiece.getTeamColor() == teamColor) {
+                Collection<ChessMove> currentMoves = validMoves(currentPosition);
+                if (!currentMoves.isEmpty()) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     /**
