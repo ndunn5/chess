@@ -36,12 +36,20 @@ public class JoinGameService {
                 if(gameData.whiteUsername() != null){
                     return new JoinGameResult("Error: already taken");
                 }
-                gameData = new GameData(gameData.gameID(), authDAO.getAuthDataWithAuthToken(joinGameRequest.getAuthToken()).username(), gameData.blackUsername(), gameData.gameName(), gameData.game());
+                gameData = new GameData(gameData.gameID(),
+                        authDAO.getAuthDataWithAuthToken(joinGameRequest.getAuthToken()).username(),
+                        gameData.blackUsername(),
+                        gameData.gameName(),
+                        gameData.game());
             }else if (joinGameRequest.getPlayerColor().equals("BLACK")){
                 if(gameData.blackUsername() != null){
                     return new JoinGameResult("Error: already taken");
                 }
-                gameData = new GameData(gameData.gameID(), gameData.whiteUsername() , authDAO.getAuthDataWithAuthToken(joinGameRequest.getAuthToken()).username(), gameData.gameName(), gameData.game());
+                gameData = new GameData(gameData.gameID(),
+                        gameData.whiteUsername() ,
+                        authDAO.getAuthDataWithAuthToken(joinGameRequest.getAuthToken()).username(),
+                        gameData.gameName(),
+                        gameData.game());
             }
             else{
                 return new JoinGameResult("Error: bad request");
