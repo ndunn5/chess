@@ -1,11 +1,9 @@
 package service;
 
-import chess.ChessGame;
 import dataaccess.AuthDAO;
 import dataaccess.GameDAO;
-import model.AuthData;
 import model.GameData;
-import model.JoinGameRequest;
+import model2.JoinGameRequest;
 import model.JoinGameResult;
 
 public class JoinGameService {
