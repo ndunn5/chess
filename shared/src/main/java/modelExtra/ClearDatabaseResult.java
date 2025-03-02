@@ -1,4 +1,4 @@
-package ModelExtra;
+package modelExtra;
 
 public class ClearDatabaseResult {
     private int statusCode;

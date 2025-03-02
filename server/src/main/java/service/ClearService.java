@@ -4,7 +4,7 @@ import dataaccess.UserDAO;
 import dataaccess.GameDAO;
 import dataaccess.AuthDAO;
 import model.ClearDatabaseRequest;
-import ModelExtra.ClearDatabaseResult;
+import modelExtra.ClearDatabaseResult;
 
 public class ClearService {
     private UserDAO userDAO;
