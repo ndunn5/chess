@@ -3,7 +3,7 @@ package service;
 import dataaccess.AuthDAO;
 import dataaccess.GameDAO;
 import model.GameData;
-import model2.JoinGameRequest;
+import ModelExtra.JoinGameRequest;
 import model.JoinGameResult;
 
 public class JoinGameService {

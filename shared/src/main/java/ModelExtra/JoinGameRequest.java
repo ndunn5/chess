@@ -1,4 +1,4 @@
-package model2;
+package ModelExtra;
 
 public class JoinGameRequest {
     String playerColor;
