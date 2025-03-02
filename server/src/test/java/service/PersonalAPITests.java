@@ -3,7 +3,7 @@ package service;
 import chess.ChessGame;
 import dataaccess.DataAccessException;
 import model.*;
-import modelExtra.JoinGameRequest;
+import extramodel.JoinGameRequest;
 import org.junit.jupiter.api.*;
 
 import static org.junit.jupiter.api.Assertions.*;

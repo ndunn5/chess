@@ -1,8 +1,8 @@
 package server;
 
 import model.*;
-import modelExtra.ClearDatabaseResult;
-import modelExtra.JoinGameRequest;
+import extramodel.ClearDatabaseResult;
+import extramodel.JoinGameRequest;
 import service.*;
 import spark.*;
 import static spark.Spark.*;
