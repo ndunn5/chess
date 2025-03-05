@@ -26,6 +26,7 @@ public class Server {
         UserDAO userDAO = new UserDAO();
         AuthDAO authDAO = new AuthDAO();
         GameDAO gameDAO = new GameDAO();
+        //replace these with SQL DAOs
 
         this.clearService = new ClearService(userDAO, gameDAO, authDAO);
         this.registerService = new RegisterService(userDAO, authDAO);
