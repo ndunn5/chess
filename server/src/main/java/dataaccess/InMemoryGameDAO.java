@@ -42,7 +42,7 @@ public class InMemoryGameDAO implements GameDAO{
         return gamesList;
     }
 
-    public void clear(){
+    public void clear() throws DataAccessException{
         allGames.clear();
     }
 

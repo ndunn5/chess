@@ -12,6 +12,6 @@ public interface GameDAO {
     public GameData getGame(int gameID);
     public void updateGame(GameData game);
     public List<Map<String, Object>> returnAllGames();
-    public void clear();
+    public void clear() throws DataAccessException;
     public boolean isEmpty();
 }
