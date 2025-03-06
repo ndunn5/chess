@@ -20,15 +20,14 @@ public class Server {
     private final CreateGameService createGameService;
     private final JoinGameService joinGameService;
 
-    public Server() {
+    public Server() throws DataAccessException {
 //        InMemoryUserDAO userDAO = new InMemoryUserDAO();
 //        InMemoryAuthDAO authDAO = new InMemoryAuthDAO();
 //        InMemoryGameDAO gameDAO = new InMemoryGameDAO();
-        //replace these with SQL DAOs
         UserDAO userDAO = new MySqlUserDAO();
         AuthDAO authDAO = new MySqlAuthDAO();
         GameDAO gameDAO = new MySqlGameDAO();
-        
+
 
         this.clearService = new ClearService(userDAO, gameDAO, authDAO);
         this.registerService = new RegisterService(userDAO, authDAO);

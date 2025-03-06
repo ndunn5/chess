@@ -8,6 +8,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class MySqlAuthDAO implements AuthDAO{
+    public MySqlAuthDAO() throws DataAccessException {
+        configureDatabase();
+    }
+
     private Map<String, UserData> usernames = new HashMap<>();
     private Map<String, AuthData> authTokens = new HashMap<>();
 
