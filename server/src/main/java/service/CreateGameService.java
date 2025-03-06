@@ -1,8 +1,8 @@
 package service;
 
 import chess.ChessGame;
-import dataaccess.AuthDAO;
-import dataaccess.GameDAO;
+import dataaccess.InMemoryAuthDAO;
+import dataaccess.InMemoryGameDAO;
 import model.AuthData;
 import model.CreateGameRequest;
 import model.CreateGameResult;
@@ -11,12 +11,12 @@ import java.util.Random;
 
 public class CreateGameService {
 
-    GameDAO gameDAO;
-    AuthDAO authDAO;
+    InMemoryGameDAO gameDAO;
+    InMemoryAuthDAO authDAO;
     int gameID = 0;
     Random random = new Random();
 
-    public CreateGameService(GameDAO gameDAO, AuthDAO authDAO){
+    public CreateGameService(InMemoryGameDAO gameDAO, InMemoryAuthDAO authDAO){
         this.gameDAO = gameDAO;
         this.authDAO = authDAO;
     }

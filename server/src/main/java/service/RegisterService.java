@@ -5,19 +5,18 @@ import model.RegisterRequest;
 import model.RegisterResult;
 import model.UserData;
 import model.AuthData;
-import dataaccess.UserDAO;
-import dataaccess.AuthDAO;
-import service.AuthService;
+import dataaccess.InMemoryUserDAO;
+import dataaccess.InMemoryAuthDAO;
 
 
 public class RegisterService {
 
     RegisterRequest registerRequest;
-    private UserDAO userDAO;
-    private AuthDAO authDAO;
+    private InMemoryUserDAO userDAO;
+    private InMemoryAuthDAO authDAO;
 
 
-    public RegisterService(UserDAO userDAO, AuthDAO authDAO) {
+    public RegisterService(InMemoryUserDAO userDAO, InMemoryAuthDAO authDAO) {
         this.userDAO = userDAO;
         this.authDAO = authDAO;
     }

@@ -8,16 +8,16 @@ import org.junit.jupiter.api.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import dataaccess.UserDAO;
-import dataaccess.GameDAO;
-import dataaccess.AuthDAO;
+import dataaccess.InMemoryUserDAO;
+import dataaccess.InMemoryGameDAO;
+import dataaccess.InMemoryAuthDAO;
 
 
 public class PersonalAPITests {
 
-    private UserDAO userDAO;
-    private GameDAO gameDAO;
-    private AuthDAO authDAO;
+    private InMemoryUserDAO userDAO;
+    private InMemoryGameDAO gameDAO;
+    private InMemoryAuthDAO authDAO;
     private ClearService clearService;
     private RegisterService registerService;
     private LoginService loginService;
@@ -28,9 +28,9 @@ public class PersonalAPITests {
 
     @BeforeEach
     void setUp() {
-        this.userDAO = new UserDAO();
-        this.gameDAO = new GameDAO();
-        this.authDAO = new AuthDAO();
+        this.userDAO = new InMemoryUserDAO();
+        this.gameDAO = new InMemoryGameDAO();
+        this.authDAO = new InMemoryAuthDAO();
 
         this.clearService = new ClearService(userDAO, gameDAO, authDAO);
         this.registerService = new RegisterService(userDAO, authDAO);

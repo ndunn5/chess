@@ -7,9 +7,9 @@ import service.*;
 import spark.*;
 import static spark.Spark.*;
 
-import dataaccess.UserDAO;
-import dataaccess.GameDAO;
-import dataaccess.AuthDAO;
+import dataaccess.InMemoryUserDAO;
+import dataaccess.InMemoryGameDAO;
+import dataaccess.InMemoryAuthDAO;
 import com.google.gson.Gson;
 
 public class Server {
@@ -23,9 +23,9 @@ public class Server {
     private final JoinGameService joinGameService;
 
     public Server() {
-        UserDAO userDAO = new UserDAO();
-        AuthDAO authDAO = new AuthDAO();
-        GameDAO gameDAO = new GameDAO();
+        InMemoryUserDAO userDAO = new InMemoryUserDAO();
+        InMemoryAuthDAO authDAO = new InMemoryAuthDAO();
+        InMemoryGameDAO gameDAO = new InMemoryGameDAO();
         //replace these with SQL DAOs
 
         this.clearService = new ClearService(userDAO, gameDAO, authDAO);

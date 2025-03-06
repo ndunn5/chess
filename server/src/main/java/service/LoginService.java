@@ -3,17 +3,15 @@ package service;
 import model.LoginRequest;
 import model.UserData;
 import model.AuthData;
-import service.AuthService;
-import dataaccess.AuthDAO;
+import dataaccess.InMemoryAuthDAO;
 import model.LoginResult;
-import model.UserData;
 
 
 public class LoginService {
 
-    AuthDAO authDAO;
+    InMemoryAuthDAO authDAO;
 
-    public LoginService(AuthDAO authDAO){
+    public LoginService(InMemoryAuthDAO authDAO){
         this.authDAO = authDAO;
     }
 

@@ -1,13 +1,12 @@
 package service;
 
-import dataaccess.UserDAO;
-import model.GameData;
+import dataaccess.InMemoryUserDAO;
 
 
 public class UserService {
-    private UserDAO userDAO;
+    private InMemoryUserDAO userDAO;
 
-    public UserService(UserDAO userDAO){
+    public UserService(InMemoryUserDAO userDAO){
         this.userDAO = userDAO;
     }
 }

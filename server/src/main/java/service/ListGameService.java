@@ -1,17 +1,17 @@
 package service;
 
-import dataaccess.AuthDAO;
-import dataaccess.GameDAO;
+import dataaccess.InMemoryAuthDAO;
+import dataaccess.InMemoryGameDAO;
 import model.AuthData;
 import model.ListGamesRequest;
 import model.ListGamesResult;
 
 public class ListGameService {
 
-    private GameDAO gameDAO;
-    private AuthDAO authDAO;
+    private InMemoryGameDAO gameDAO;
+    private InMemoryAuthDAO authDAO;
 
-    public ListGameService(GameDAO gameDAO, AuthDAO authDAO){
+    public ListGameService(InMemoryGameDAO gameDAO, InMemoryAuthDAO authDAO){
         this.gameDAO = gameDAO;
         this.authDAO = authDAO;
     }
