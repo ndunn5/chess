@@ -1,5 +1,7 @@
 package service;
 
+import dataaccess.AuthDAO;
+import dataaccess.GameDAO;
 import dataaccess.InMemoryAuthDAO;
 import dataaccess.InMemoryGameDAO;
 import model.GameData;
@@ -7,10 +9,10 @@ import extramodel.JoinGameRequest;
 import model.JoinGameResult;
 
 public class JoinGameService {
-    InMemoryGameDAO gameDAO;
-    InMemoryAuthDAO authDAO;
+    GameDAO gameDAO;
+    AuthDAO authDAO;
 
-    public JoinGameService(InMemoryGameDAO gameDAO, InMemoryAuthDAO authDAO){
+    public JoinGameService(GameDAO gameDAO, AuthDAO authDAO){
         this.gameDAO = gameDAO;
         this.authDAO = authDAO;
     }

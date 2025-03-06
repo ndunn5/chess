@@ -1,22 +1,20 @@
 package service;
 
-import dataaccess.DataAccessException;
+import dataaccess.*;
 import model.RegisterRequest;
 import model.RegisterResult;
 import model.UserData;
 import model.AuthData;
-import dataaccess.InMemoryUserDAO;
-import dataaccess.InMemoryAuthDAO;
 
 
 public class RegisterService {
 
     RegisterRequest registerRequest;
-    private InMemoryUserDAO userDAO;
-    private InMemoryAuthDAO authDAO;
+    private UserDAO userDAO;
+    private AuthDAO authDAO;
 
 
-    public RegisterService(InMemoryUserDAO userDAO, InMemoryAuthDAO authDAO) {
+    public RegisterService(UserDAO userDAO, AuthDAO authDAO) {
         this.userDAO = userDAO;
         this.authDAO = authDAO;
     }

@@ -1,5 +1,6 @@
 package service;
 
+import dataaccess.AuthDAO;
 import dataaccess.InMemoryAuthDAO;
 import model.AuthData;
 import model.LogoutRequest;
@@ -7,9 +8,9 @@ import model.LogoutResult;
 import model.UserData;
 
 public class LogoutService {
-    InMemoryAuthDAO authDAO;
+    AuthDAO authDAO;
 
-    public LogoutService(InMemoryAuthDAO authDAO){
+    public LogoutService(AuthDAO authDAO){
         this.authDAO = authDAO;
     }
 

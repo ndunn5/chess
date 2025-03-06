@@ -1,5 +1,6 @@
 package service;
 
+import dataaccess.AuthDAO;
 import model.LoginRequest;
 import model.UserData;
 import model.AuthData;
@@ -9,9 +10,9 @@ import model.LoginResult;
 
 public class LoginService {
 
-    InMemoryAuthDAO authDAO;
+    AuthDAO authDAO;
 
-    public LoginService(InMemoryAuthDAO authDAO){
+    public LoginService(AuthDAO authDAO){
         this.authDAO = authDAO;
     }
 

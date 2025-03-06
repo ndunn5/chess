@@ -1,5 +1,6 @@
 package server;
 
+import dataaccess.*;
 import model.*;
 import extramodel.ClearDatabaseResult;
 import extramodel.JoinGameRequest;
@@ -7,9 +8,6 @@ import service.*;
 import spark.*;
 import static spark.Spark.*;
 
-import dataaccess.InMemoryUserDAO;
-import dataaccess.InMemoryGameDAO;
-import dataaccess.InMemoryAuthDAO;
 import com.google.gson.Gson;
 
 public class Server {
@@ -23,10 +21,14 @@ public class Server {
     private final JoinGameService joinGameService;
 
     public Server() {
-        InMemoryUserDAO userDAO = new InMemoryUserDAO();
-        InMemoryAuthDAO authDAO = new InMemoryAuthDAO();
-        InMemoryGameDAO gameDAO = new InMemoryGameDAO();
+//        InMemoryUserDAO userDAO = new InMemoryUserDAO();
+//        InMemoryAuthDAO authDAO = new InMemoryAuthDAO();
+//        InMemoryGameDAO gameDAO = new InMemoryGameDAO();
         //replace these with SQL DAOs
+        UserDAO userDAO = new MySqlUserDAO();
+        AuthDAO authDAO = new MySqlAuthDAO();
+        GameDAO gameDAO = new MySqlGameDAO();
+        
 
         this.clearService = new ClearService(userDAO, gameDAO, authDAO);
         this.registerService = new RegisterService(userDAO, authDAO);

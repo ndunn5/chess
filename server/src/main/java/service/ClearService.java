@@ -1,17 +1,15 @@
 package service;
 
-import dataaccess.InMemoryUserDAO;
-import dataaccess.InMemoryGameDAO;
-import dataaccess.InMemoryAuthDAO;
+import dataaccess.*;
 import model.ClearDatabaseRequest;
 import extramodel.ClearDatabaseResult;
 
 public class ClearService {
-    private InMemoryUserDAO userDAO;
-    private InMemoryGameDAO gameDAO;
-    private InMemoryAuthDAO authDAO;
+    private UserDAO userDAO;
+    private GameDAO gameDAO;
+    private AuthDAO authDAO;
 
-    public ClearService(InMemoryUserDAO userDAO, InMemoryGameDAO gameDAO, InMemoryAuthDAO authDAO) {
+    public ClearService(UserDAO userDAO, GameDAO gameDAO, AuthDAO authDAO) {
         this.userDAO = userDAO;
         this.gameDAO = gameDAO;
         this.authDAO = authDAO;

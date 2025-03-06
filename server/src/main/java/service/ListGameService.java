@@ -1,5 +1,7 @@
 package service;
 
+import dataaccess.AuthDAO;
+import dataaccess.GameDAO;
 import dataaccess.InMemoryAuthDAO;
 import dataaccess.InMemoryGameDAO;
 import model.AuthData;
@@ -8,10 +10,10 @@ import model.ListGamesResult;
 
 public class ListGameService {
 
-    private InMemoryGameDAO gameDAO;
-    private InMemoryAuthDAO authDAO;
+    private GameDAO gameDAO;
+    private AuthDAO authDAO;
 
-    public ListGameService(InMemoryGameDAO gameDAO, InMemoryAuthDAO authDAO){
+    public ListGameService(GameDAO gameDAO, AuthDAO authDAO){
         this.gameDAO = gameDAO;
         this.authDAO = authDAO;
     }
