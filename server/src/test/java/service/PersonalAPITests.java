@@ -310,5 +310,29 @@ public class PersonalAPITests {
     public void returnAllGamesNegative() throws DataAccessException {
         assertEquals(new ArrayList<>(), gameDAO.returnAllGames());
     }
+
+    @Test
+    @DisplayName("Clear games")
+    public void clearGames() throws DataAccessException {
+        gameDAO.insertGame(new GameData(12555, "testWhiteUsername", "testBlackUsername", "testName", new ChessGame()));
+        gameDAO.clear();
+        assertTrue(gameDAO.isEmpty());
+    }
+
+
+    @Test
+    @DisplayName("Game isEmpty Positive")
+    public void gameIsEmptyPositive() throws DataAccessException {
+        gameDAO.insertGame(new GameData(12555, "testWhiteUsername", "testBlackUsername", "testName", new ChessGame()));
+        gameDAO.clear();
+        assertTrue(gameDAO.isEmpty());
+    }
+
+    @Test
+    @DisplayName("Game isEmpty Negative")
+    public void gameIsEmptyNegative() throws DataAccessException {
+        gameDAO.insertGame(new GameData(12555, "testWhiteUsername", "testBlackUsername", "testName", new ChessGame()));
+        assertFalse(gameDAO.isEmpty());
+    }
 }
 
