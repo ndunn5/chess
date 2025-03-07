@@ -1,23 +1,20 @@
 package service;
 
 import chess.ChessGame;
-import dataaccess.DataAccessException;
+import dataaccess.*;
 import model.*;
 import extramodel.JoinGameRequest;
 import org.junit.jupiter.api.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import dataaccess.InMemoryUserDAO;
-import dataaccess.InMemoryGameDAO;
-import dataaccess.InMemoryAuthDAO;
-
 
 public class PersonalAPITests {
 
-    private InMemoryUserDAO userDAO;
-    private InMemoryGameDAO gameDAO;
-    private InMemoryAuthDAO authDAO;
+    private UserDAO userDAO;
+    private GameDAO gameDAO;
+    private AuthDAO authDAO;
+
     private ClearService clearService;
     private RegisterService registerService;
     private LoginService loginService;
@@ -195,6 +192,29 @@ public class PersonalAPITests {
         JoinGameResult joinResult = joinGameService.joinGame(testJoinGameRequest);
 
         assertNotNull(joinResult.message());
+    }
+
+    @Test
+    @DisplayName("getUser Positive")
+    public void getUserPositive() throws DataAccessException {
+        registerService.register(new RegisterRequest("noah", "dunn", "gmail"));
+        UserData testUserData = userDAO.getUser("noah");
+        assertNotNull(testUserData);
+    }
+
+    @Test
+    @DisplayName("getUser Negative")
+    public void getUserNegative() throws DataAccessException {
+        UserData testUserData = userDAO.getUser("noah");
+        assertNull(testUserData);
+    }
+
+    @Test
+    @DisplayName("Clear User")
+    public void clearUser() throws DataAccessException {
+        registerService.register(new RegisterRequest("noah", "dunn", "gmail"));
+        userDAO.clear();
+        assertTrue(userDAO.isEmpty());
     }
 }
 
