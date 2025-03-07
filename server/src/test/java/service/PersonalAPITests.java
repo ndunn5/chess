@@ -6,6 +6,10 @@ import model.*;
 import extramodel.JoinGameRequest;
 import org.junit.jupiter.api.*;
 
+import javax.xml.crypto.Data;
+
+import java.util.ArrayList;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 
@@ -215,6 +219,96 @@ public class PersonalAPITests {
         registerService.register(new RegisterRequest("noah", "dunn", "gmail"));
         userDAO.clear();
         assertTrue(userDAO.isEmpty());
+    }
+
+    @Test
+    @DisplayName("User isEmpty Positive")
+    public void userIsEmptyPositive() throws DataAccessException {
+        registerService.register(new RegisterRequest("noah", "dunn", "gmail"));
+        userDAO.clear();
+        assertTrue(userDAO.isEmpty());
+    }
+
+    @Test
+    @DisplayName("User isEmpty Negative")
+    public void userIsEmptyNegative() throws DataAccessException {
+        registerService.register(new RegisterRequest("noah", "dunn", "gmail"));
+        assertFalse(userDAO.isEmpty());
+    }
+
+    @Test
+    @DisplayName("insertUser Positive")
+    public void insertUserPositive() throws DataAccessException {
+        userDAO.insertUser(new UserData("noah", "dunn", "email"));
+        assertNotNull(userDAO.getUser("noah"));
+    }
+
+    @Test
+    @DisplayName("insertUser Negative")
+    public void insertUserNegative() throws DataAccessException {
+        assertNull(userDAO.getUser("noah"));
+    }
+
+    @Test
+    @DisplayName("insertGame Positive")
+    public void insertGamePositive() throws DataAccessException {
+        gameDAO.insertGame(new GameData(12242000, null, null, "testGame", new ChessGame()));
+        assertFalse(gameDAO.isEmpty());
+    }
+
+    @Test
+    @DisplayName("insertGame Negative")
+    public void insertGameNegative() throws DataAccessException {
+        gameDAO.insertGame(new GameData(100, null, null, "testGame", new ChessGame()));
+        assertNull(gameDAO.getGame(4000));
+    }
+
+    @Test
+    @DisplayName("getGame Positive")
+    public void getGamePositive() throws DataAccessException {
+        gameDAO.insertGame(new GameData(12242000, null, null, "testGame", new ChessGame()));
+        assertNotNull(gameDAO.getGame(12242000));
+    }
+
+    @Test
+    @DisplayName("getGame Negative")
+    public void getGameNegative() throws DataAccessException {
+        gameDAO.insertGame(new GameData(100, null, null, "testGame", new ChessGame()));
+        assertNull(gameDAO.getGame(4000));
+    }
+
+    @Test
+    @DisplayName("updateGame Positive")
+    public void updateGamePositive() throws DataAccessException {
+        GameData originalGameData = new GameData(12242000, null, null, "testGame", new ChessGame());
+        GameData updatedGameData = new GameData(12242000, "germany", "denmark", "testGame", originalGameData.game());
+        gameDAO.insertGame(originalGameData);
+        gameDAO.updateGame(updatedGameData);
+        assertNotEquals(originalGameData, gameDAO.getGame(12242000));
+    }
+
+    @Test
+    @DisplayName("updateGame Negative")
+    public void updateGameNegative() throws DataAccessException {
+        GameData originalGameData = new GameData(12242000, null, null, "testGame", new ChessGame());
+        gameDAO.insertGame(originalGameData);
+        assertEquals(originalGameData, gameDAO.getGame(12242000));
+    }
+
+    @Test
+    @DisplayName("returnAllGames Positive")
+    public void returnAllGamesPositive() throws DataAccessException {
+        GameData firstGameData = new GameData(12242000, null, null, "testGame", new ChessGame());
+        GameData secondGameData = new GameData(15, "germany", "denmark", "testGame", new ChessGame());
+        gameDAO.insertGame(firstGameData);
+        gameDAO.insertGame(secondGameData);
+        assertNotNull(gameDAO.returnAllGames());
+    }
+
+    @Test
+    @DisplayName("returnAllGames Negative")
+    public void returnAllGamesNegative() throws DataAccessException {
+        assertEquals(new ArrayList<>(), gameDAO.returnAllGames());
     }
 }
 
