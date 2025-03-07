@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.mindrot.jbcrypt.BCrypt;
+import service.HasherHelper;
 
 //import exception.ResponseException;
 //import model.Pet;
@@ -47,14 +48,13 @@ public class MySqlUserDAO implements UserDAO {
     }
 
     public void insertUser(UserData user) throws DataAccessException {
-        String sql = "INSERT INTO users (username, hashed_password, email) VALUES (?, ?, ?)";
+        String sql = "INSERT INTO users (username, password, email) VALUES (?, ?, ?)";
 
         try (Connection conn = DatabaseManager.getConnection();
              PreparedStatement preparedStatement = conn.prepareStatement(sql)) {
 
             preparedStatement.setString(1, user.username());
             preparedStatement.setString(2, user.password());
-            //I need to has tgat guy
             preparedStatement.setString(3, user.email());
             preparedStatement.executeUpdate();
         } catch (SQLException ex) {
