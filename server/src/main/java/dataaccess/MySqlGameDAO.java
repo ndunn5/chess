@@ -1,5 +1,6 @@
 package dataaccess;
 
+import chess.ChessGame;
 import model.GameData;
 
 import java.sql.Connection;
@@ -10,6 +11,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import com.google.gson.Gson;
+import model.UserData;
 
 public class MySqlGameDAO implements GameDAO {
     public MySqlGameDAO() throws DataAccessException {
@@ -19,11 +22,46 @@ public class MySqlGameDAO implements GameDAO {
     private Map<Integer, GameData> allGames = new HashMap<>();
 
     public void insertGame(GameData game) throws DataAccessException {
-        allGames.put(game.gameID(), new GameData(game.gameID(), game.whiteUsername(), game.blackUsername(), game.gameName(), game.game()));
+        String sql = "INSERT INTO games (gameID, whiteUsername, blackUsername, gameName, game) VALUES (?, ?, ?, ?, ?)";
+
+        try (Connection conn = DatabaseManager.getConnection();
+             PreparedStatement preparedStatement = conn.prepareStatement(sql)) {
+
+            preparedStatement.setInt(1, game.gameID());
+            preparedStatement.setString(2, game.whiteUsername());
+            preparedStatement.setString(3, game.blackUsername());
+            preparedStatement.setString(4, game.gameName());
+            Gson gson = new Gson();
+            String gameJson = gson.toJson(game.game());
+            preparedStatement.setString(5, gameJson);
+            preparedStatement.executeUpdate();
+        } catch (SQLException ex) {
+            throw new DataAccessException("Error inserting game: " + ex.getMessage());
+        }
     }
 
-    public GameData getGame(int gameID){
-        return allGames.get(gameID);
+    public GameData getGame(int gameID) throws DataAccessException {
+        String sql = "SELECT gameID, whiteUsername, blackUsername, gameName, game FROM games WHERE gameID = ?;";
+
+        try (Connection conn = DatabaseManager.getConnection();
+             PreparedStatement preparedStatement = conn.prepareStatement(sql)) {
+            preparedStatement.setInt(1, gameID);
+            try(ResultSet resultSet = preparedStatement.executeQuery()){
+                if(resultSet.next()){
+                    Gson gson = new Gson();
+
+                    return new GameData(resultSet.getInt("gameID"), resultSet.getString("whiteUsername"),
+                            resultSet.getString("blackUsername"), resultSet.getString("gameName"),
+                            gson.fromJson(resultSet.getString("game"), ChessGame.class));
+                }
+                else{
+                    return null;
+                }
+            }
+        }
+        catch (SQLException | DataAccessException ex) {
+            throw new DataAccessException("Error getting game from gameID: " + ex.getMessage());
+        }
     }
 
 

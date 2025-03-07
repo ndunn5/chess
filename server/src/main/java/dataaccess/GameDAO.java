@@ -9,7 +9,7 @@ import java.util.Map;
 
 public interface GameDAO {
     public void insertGame(GameData game) throws DataAccessException;
-    public GameData getGame(int gameID);
+    public GameData getGame(int gameID) throws DataAccessException;
     public void updateGame(GameData game);
     public List<Map<String, Object>> returnAllGames();
     public void clear() throws DataAccessException;
