@@ -402,7 +402,7 @@ public class PersonalAPITests {
 
     @Test
     @DisplayName("Auth isEmpty Negative")
-    public void AuthIsEmptyNegative() throws DataAccessException {
+    public void authIsEmptyNegative() throws DataAccessException {
         authDAO.insertAuth(new AuthData("authtoken", "username"), new UserData("username", "password", "email"));
         assertFalse(authDAO.isEmpty());
     }
