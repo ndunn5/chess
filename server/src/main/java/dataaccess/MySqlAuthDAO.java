@@ -30,23 +30,7 @@ public class MySqlAuthDAO implements AuthDAO{
     }
 
     public UserData getUserDataWithUsername(String username) throws DataAccessException {
-        String sql = "SELECT username, password, email FROM users WHERE username = ?;";
-
-        try (Connection conn = DatabaseManager.getConnection();
-             PreparedStatement preparedStatement = conn.prepareStatement(sql)) {
-            preparedStatement.setString(1, username);
-            try(ResultSet resultSet = preparedStatement.executeQuery()){
-                if(resultSet.next()){
-                    return new UserData(resultSet.getString("username"), resultSet.getString("password"), resultSet.getString("email"));
-                }
-                else{
-                    return null;
-                }
-            }
-        }
-        catch (SQLException | DataAccessException ex) {
-            throw new DataAccessException("Error getting user from username: " + ex.getMessage());
-        }
+        return DatabaseHelper.getUserDataWithUsernameHelper(username);
     }
 
     public AuthData getAuthDataWithAuthToken(String authToken) throws DataAccessException {

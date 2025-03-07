@@ -11,23 +11,7 @@ public class MySqlUserDAO implements UserDAO {
     }
 
     public UserData getUser(String username) throws DataAccessException {
-        String sql = "SELECT username, password, email FROM users WHERE username = ?;";
-
-        try (Connection conn = DatabaseManager.getConnection();
-             PreparedStatement preparedStatement = conn.prepareStatement(sql)) {
-            preparedStatement.setString(1, username);
-            try(ResultSet resultSet = preparedStatement.executeQuery()){
-                if(resultSet.next()){
-                    return new UserData(resultSet.getString("username"), resultSet.getString("password"), resultSet.getString("email"));
-                }
-                else{
-                    return null;
-                }
-            }
-        }
-        catch (SQLException ex) {
-            throw new DataAccessException("Error getting user from username: " + ex.getMessage());
-        }
+        return DatabaseHelper.getUserDataWithUsernameHelper(username);
     }
 
     public void clear() throws DataAccessException {
