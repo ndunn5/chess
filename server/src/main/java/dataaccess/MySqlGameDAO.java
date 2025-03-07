@@ -4,6 +4,7 @@ import model.GameData;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -60,14 +61,25 @@ public class MySqlGameDAO implements GameDAO {
         }
     }
 
-    public boolean isEmpty() {
-        return allGames.isEmpty();
+    public boolean isEmpty() throws DataAccessException {
+        String sql = "SELECT COUNT(*) FROM games";
+
+        try (Connection conn = DatabaseManager.getConnection();
+             PreparedStatement preparedStatement = conn.prepareStatement(sql);
+             ResultSet resultSet = preparedStatement.executeQuery()) {
+            if (resultSet.next()) {
+                return resultSet.getInt(1) == 0;
+            }
+        } catch (SQLException | DataAccessException ex) {
+            throw new DataAccessException("Error checking isEmpty:" + ex.getMessage());
+        }
+        return false;
     }
 
     private final String[] createStatements = {
             """
     CREATE TABLE IF NOT EXISTS games (
-      gameID INT NOT NULL AUTO_INCREMENT,
+      gameID INT NOT NULL,
       whiteUsername VARCHAR(256),
       blackUsername VARCHAR(256),
       gameName VARCHAR(256) NOT NULL,
