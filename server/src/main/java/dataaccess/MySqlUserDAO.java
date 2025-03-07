@@ -43,9 +43,22 @@ public class MySqlUserDAO implements UserDAO {
         }
     }
 
-    public boolean isEmpty() {
-        return users.isEmpty();
+    public boolean isEmpty() throws DataAccessException {
+        String sql = "SELECT COUNT(*) FROM users";
+
+        try (Connection conn = DatabaseManager.getConnection();
+             PreparedStatement preparedStatement = conn.prepareStatement(sql);
+             ResultSet resultSet = preparedStatement.executeQuery()) {
+            if (resultSet.next()) {
+                int count = resultSet.getInt(1);
+                return count == 0;
+            }
+        } catch (SQLException | DataAccessException ex) {
+            throw new DataAccessException("Error checking isEmpty:" + ex.getMessage());
+        }
+        return false;
     }
+
 
     public void insertUser(UserData user) throws DataAccessException {
         String sql = "INSERT INTO users (username, password, email) VALUES (?, ?, ?)";
