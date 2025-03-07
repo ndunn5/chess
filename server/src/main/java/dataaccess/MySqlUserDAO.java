@@ -8,17 +8,6 @@ import java.util.Map;
 import org.mindrot.jbcrypt.BCrypt;
 import service.HasherHelper;
 
-//import exception.ResponseException;
-//import model.Pet;
-//import model.PetType;
-//
-//import java.util.ArrayList;
-//import java.util.Collection;
-//import java.sql.*;
-//
-//import static java.sql.Statement.RETURN_GENERATED_KEYS;
-//import static java.sql.Types.NULL;
-
 public class MySqlUserDAO implements UserDAO {
 
     public MySqlUserDAO() throws DataAccessException {

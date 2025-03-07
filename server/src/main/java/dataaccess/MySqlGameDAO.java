@@ -48,7 +48,7 @@ public class MySqlGameDAO implements GameDAO {
         return gamesList;
     }
 
-    public void clear() throws DataAccessException{
+    public void clear() throws DataAccessException {
         String sql = "DELETE FROM games";
 
         try (Connection conn = DatabaseManager.getConnection();

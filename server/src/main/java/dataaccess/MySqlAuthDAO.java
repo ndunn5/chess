@@ -3,6 +3,8 @@ package dataaccess;
 import model.AuthData;
 import model.UserData;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
@@ -37,9 +39,16 @@ public class MySqlAuthDAO implements AuthDAO{
         return usernames.isEmpty();
     }
 
-    public void clear(){
-        authTokens.clear();
-        usernames.clear();
+    public void clear() throws DataAccessException {
+        String sql = "DELETE FROM auth";
+
+        try (Connection conn = DatabaseManager.getConnection();
+             PreparedStatement preparedStatement = conn.prepareStatement(sql)) {
+
+            preparedStatement.executeUpdate();
+        } catch (SQLException ex) {
+            throw new DataAccessException("Error clearing auth table: " + ex.getMessage());
+        }
     }
 
     private final String[] createStatements = {
