@@ -44,13 +44,6 @@ public class MySqlAuthDAO implements AuthDAO{
 
     private final String[] createStatements = {
             """
-    CREATE TABLE IF NOT EXISTS users (
-        username VARCHAR(256) NOT NULL PRIMARY KEY,
-        password VARCHAR(512) NOT NULL,
-        email VARCHAR(256) NOT NULL UNIQUE
-    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
-    """,
-            """
     CREATE TABLE IF NOT EXISTS auth (
         authToken VARCHAR(512) NOT NULL PRIMARY KEY,
         username VARCHAR(256) NOT NULL,

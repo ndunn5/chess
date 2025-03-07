@@ -32,7 +32,7 @@ public class RegisterService {
                 return new RegisterResult("Error: already taken");
             }
 
-            UserData userData = new UserData(registerRequest.username(), registerRequest.password(), registerRequest.email());
+            UserData userData = new UserData(registerRequest.username(), HasherHelper.hashPassword(registerRequest.password()) , registerRequest.email());
             userDAO.insertUser(userData);
 
             String authToken = AuthService.generateAuthToken();
