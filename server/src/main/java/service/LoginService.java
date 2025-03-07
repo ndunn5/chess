@@ -21,7 +21,7 @@ public class LoginService {
             return new LoginResult("Error: unauthorized");
         }
         UserData userData = authDAO.getUserDataWithUsername(loginRequest.username());
-        if (!HasherHelper.verifyPassword(loginRequest.password(), authDAO.getUserDataWithUsername(loginRequest.username()).password())) {
+        if (!DatabaseHelper.verifyPassword(loginRequest.password(), authDAO.getUserDataWithUsername(loginRequest.username()).password())) {
             return new LoginResult("Error: unauthorized");
         }
         try{

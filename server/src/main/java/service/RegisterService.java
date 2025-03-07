@@ -33,7 +33,7 @@ public class RegisterService {
             }
 
             UserData userData = new UserData(registerRequest.username(),
-                    HasherHelper.hashPassword(registerRequest.password()),
+                    DatabaseHelper.hashPassword(registerRequest.password()),
                     registerRequest.email());
             userDAO.insertUser(userData);
 

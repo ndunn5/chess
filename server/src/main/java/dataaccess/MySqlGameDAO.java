@@ -2,6 +2,7 @@ package dataaccess;
 
 import chess.ChessGame;
 import model.GameData;
+import service.DatabaseHelper;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -16,7 +17,7 @@ import model.UserData;
 
 public class MySqlGameDAO implements GameDAO {
     public MySqlGameDAO() throws DataAccessException {
-        configureDatabase();
+        DatabaseHelper.configureDatabase(createStatements);
     }
 
     private Map<Integer, GameData> allGames = new HashMap<>();
@@ -144,17 +145,4 @@ public class MySqlGameDAO implements GameDAO {
     """
     };
 
-
-    private void configureDatabase() throws DataAccessException {
-        DatabaseManager.createDatabase();
-        try (var conn = DatabaseManager.getConnection()) {
-            for (var statement : createStatements) {
-                try (var preparedStatement = conn.prepareStatement(statement)) {
-                    preparedStatement.executeUpdate();
-                }
-            }
-        } catch (SQLException ex) {
-            throw new DataAccessException(String.format("Unable to configure database: %s", ex.getMessage()));
-        }
-    }
 }

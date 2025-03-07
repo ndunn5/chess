@@ -2,6 +2,7 @@ package dataaccess;
 
 import model.AuthData;
 import model.UserData;
+import service.DatabaseHelper;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -11,7 +12,7 @@ import java.sql.SQLException;
 public class MySqlAuthDAO implements AuthDAO{
 
     public MySqlAuthDAO() throws DataAccessException {
-        configureDatabase();
+        DatabaseHelper.configureDatabase(createStatements);
     }
 
     public void insertAuth(AuthData auth, UserData user) throws DataAccessException{
@@ -118,17 +119,4 @@ public class MySqlAuthDAO implements AuthDAO{
             """
     };
 
-
-    private void configureDatabase() throws DataAccessException {
-        DatabaseManager.createDatabase();
-        try (var conn = DatabaseManager.getConnection()) {
-            for (var statement : createStatements) {
-                try (var preparedStatement = conn.prepareStatement(statement)) {
-                    preparedStatement.executeUpdate();
-                }
-            }
-        } catch (SQLException ex) {
-            throw new DataAccessException(String.format("Unable to configure database: %s", ex.getMessage()));
-        }
-    }
 }
