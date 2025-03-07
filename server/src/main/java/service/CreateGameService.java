@@ -1,10 +1,7 @@
 package service;
 
 import chess.ChessGame;
-import dataaccess.AuthDAO;
-import dataaccess.GameDAO;
-import dataaccess.InMemoryAuthDAO;
-import dataaccess.InMemoryGameDAO;
+import dataaccess.*;
 import model.AuthData;
 import model.CreateGameRequest;
 import model.CreateGameResult;
@@ -23,7 +20,7 @@ public class CreateGameService {
         this.authDAO = authDAO;
     }
 
-    public CreateGameResult createGame(CreateGameRequest createGameRequest){
+    public CreateGameResult createGame(CreateGameRequest createGameRequest) throws DataAccessException {
         if(authDAO.getAuthDataWithAuthToken(createGameRequest.authToken()) == null){
             return new CreateGameResult("Error: unauthorized");
         }

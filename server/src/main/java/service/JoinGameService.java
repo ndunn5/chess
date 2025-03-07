@@ -1,9 +1,6 @@
 package service;
 
-import dataaccess.AuthDAO;
-import dataaccess.GameDAO;
-import dataaccess.InMemoryAuthDAO;
-import dataaccess.InMemoryGameDAO;
+import dataaccess.*;
 import model.GameData;
 import extramodel.JoinGameRequest;
 import model.JoinGameResult;
@@ -17,7 +14,7 @@ public class JoinGameService {
         this.authDAO = authDAO;
     }
 
-    public JoinGameResult joinGame(JoinGameRequest joinGameRequest){
+    public JoinGameResult joinGame(JoinGameRequest joinGameRequest) throws DataAccessException {
         if (authDAO.getAuthDataWithAuthToken(joinGameRequest.getAuthToken()) == null) {
             return new JoinGameResult("Error: unauthorized");
         }

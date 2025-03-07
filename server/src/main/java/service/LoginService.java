@@ -1,6 +1,7 @@
 package service;
 
 import dataaccess.AuthDAO;
+import dataaccess.DataAccessException;
 import model.LoginRequest;
 import model.UserData;
 import model.AuthData;
@@ -34,7 +35,7 @@ public class LoginService {
 //        }
 //    }
 
-    public LoginResult login(LoginRequest loginRequest){
+    public LoginResult login(LoginRequest loginRequest) throws DataAccessException {
         if(authDAO.getUserDataWithUsername(loginRequest.username()) == null){
             return new LoginResult("Error: unauthorized");
         }

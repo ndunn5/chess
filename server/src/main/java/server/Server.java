@@ -88,21 +88,21 @@ public class Server {
         return new Gson().toJson(result);
     }
 
-    private String handleLogin(Request request, Response response) {
+    private String handleLogin(Request request, Response response) throws DataAccessException {
         LoginRequest loginRequest = new Gson().fromJson(request.body(), LoginRequest.class);
         LoginResult result = loginService.login(loginRequest);
         response.status(getStatusCode(result.message()));
         return new Gson().toJson(result);
     }
 
-    private String handleLogout(Request request, Response response) {
+    private String handleLogout(Request request, Response response) throws DataAccessException {
         LogoutRequest logoutRequest = new LogoutRequest(request.headers("authorization"));
         LogoutResult result = logoutService.logout(logoutRequest);
         response.status(getStatusCode(result.message()));
         return result.message() == null ? "{}" : new Gson().toJson(result);
     }
 
-    private String handleListGames(Request request, Response response) {
+    private String handleListGames(Request request, Response response) throws DataAccessException {
         ListGamesRequest listGamesRequest = new ListGamesRequest(request.headers("authorization"));
         ListGamesResult result = listGameService.listGames(listGamesRequest);
         response.status(getStatusCode(result.message()));
@@ -111,7 +111,7 @@ public class Server {
 
 
 
-    private String handleJoinGame(Request request, Response response) {
+    private String handleJoinGame(Request request, Response response) throws DataAccessException {
         String authToken = request.headers("authorization");
         JoinGameRequest joinGameRequest = new Gson().fromJson(request.body(), JoinGameRequest.class);
         joinGameRequest.addAuthToken(authToken);

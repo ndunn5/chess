@@ -1,6 +1,7 @@
 package service;
 
 import dataaccess.AuthDAO;
+import dataaccess.DataAccessException;
 import dataaccess.InMemoryAuthDAO;
 import model.AuthData;
 import model.LogoutRequest;
@@ -14,7 +15,7 @@ public class LogoutService {
         this.authDAO = authDAO;
     }
 
-    public LogoutResult logout(LogoutRequest logoutRequest){
+    public LogoutResult logout(LogoutRequest logoutRequest) throws DataAccessException {
         if(authDAO.getAuthDataWithAuthToken(logoutRequest.authToken()) == null){
             return new LogoutResult("Error: unauthorized");
         }

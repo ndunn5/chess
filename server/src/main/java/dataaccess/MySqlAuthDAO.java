@@ -7,20 +7,25 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.HashMap;
-import java.util.Map;
 
 public class MySqlAuthDAO implements AuthDAO{
+
     public MySqlAuthDAO() throws DataAccessException {
         configureDatabase();
     }
 
-    private Map<String, UserData> usernames = new HashMap<>();
-    private Map<String, AuthData> authTokens = new HashMap<>();
-
     public void insertAuth(AuthData auth, UserData user) throws DataAccessException{
-        usernames.put(auth.username(), user);
-        authTokens.put(auth.authToken(), auth);
+        String sql = "INSERT INTO auth (authToken, username) VALUES (?, ?)";
+
+        try (Connection conn = DatabaseManager.getConnection();
+             PreparedStatement preparedStatement = conn.prepareStatement(sql)) {
+
+            preparedStatement.setString(1, auth.authToken());
+            preparedStatement.setString(2, auth.username());
+            preparedStatement.executeUpdate();
+        } catch (SQLException ex) {
+            throw new DataAccessException("Error inserting auth: " + ex.getMessage());
+        }
     }
 
     public UserData getUserDataWithUsername(String username) throws DataAccessException {
@@ -68,7 +73,7 @@ public class MySqlAuthDAO implements AuthDAO{
         try (Connection conn = DatabaseManager.getConnection();
              PreparedStatement preparedStatement = conn.prepareStatement(sql)) {
             preparedStatement.setString(1, auth.authToken());
-            preparedStatement.executeQuery();
+            preparedStatement.executeUpdate();
         }
         catch (Exception ex){
             throw new DataAccessException("Error AuthData from authToken: " + ex.getMessage());
