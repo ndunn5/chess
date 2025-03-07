@@ -16,17 +16,37 @@ public class MySqlUserDAO implements UserDAO {
 
     private Map<String, UserData> users = new HashMap<>();
 
-    public UserData getUser(String username) {
-        return users.get(username);
+    public UserData getUser(String username) throws DataAccessException {
+        String sql = "SELECT username, password, email FROM users WHERE username = ?;";
+
+        try (Connection conn = DatabaseManager.getConnection();
+             PreparedStatement preparedStatement = conn.prepareStatement(sql)) {
+            preparedStatement.setString(1, username);
+            try(ResultSet resultSet = preparedStatement.executeQuery()){
+                if(resultSet.next()){
+                    return new UserData(resultSet.getString("username"), resultSet.getString("password"), resultSet.getString("email"));
+                }
+                else{
+                    return null;
+                }
+            }
+        }
+        catch (SQLException ex) {
+            throw new DataAccessException("Error clearing users table: " + ex.getMessage());
+        }
     }
 
     public void clear() throws DataAccessException {
         String sql = "DELETE FROM users";
+        String resetAutoIncrement = "ALTER TABLE users AUTO_INCREMENT = 1";
 
         try (Connection conn = DatabaseManager.getConnection();
              PreparedStatement preparedStatement = conn.prepareStatement(sql)) {
 
             preparedStatement.executeUpdate();
+            try(PreparedStatement resetStatement = conn.prepareStatement(resetAutoIncrement)){
+                resetStatement.executeUpdate();
+            }
         } catch (SQLException ex) {
             throw new DataAccessException("Error clearing users table: " + ex.getMessage());
         }
@@ -64,19 +84,6 @@ public class MySqlUserDAO implements UserDAO {
         }
     }
 
-//    void storeUserPassword(String username, String clearTextPassword) {
-//        String hashedPassword = BCrypt.hashpw(clearTextPassword, BCrypt.gensalt());
-//
-//        // write the hashed password in database along with the user's other information
-//        writeHashedPasswordToDatabase(username, hashedPassword);
-//    }
-//
-//    boolean verifyUser(String username, String providedClearTextPassword) {
-//        // read the previously hashed password from the database
-//        var hashedPassword = readHashedPasswordFromDatabase(username);
-//
-//        return BCrypt.checkpw(providedClearTextPassword, hashedPassword);
-//    }
 
 
     private final String[] createStatements = {
