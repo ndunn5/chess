@@ -8,6 +8,6 @@ public interface AuthDAO {
     public UserData getUserDataWithUsername(String username);
     public AuthData getAuthDataWithAuthToken(String authToken);
     public void deleteAuth(AuthData auth, UserData user);
-    public boolean isEmpty();
+    public boolean isEmpty() throws DataAccessException;
     public void clear() throws DataAccessException;
 }

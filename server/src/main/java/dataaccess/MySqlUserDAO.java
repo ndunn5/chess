@@ -52,8 +52,7 @@ public class MySqlUserDAO implements UserDAO {
              PreparedStatement preparedStatement = conn.prepareStatement(sql);
              ResultSet resultSet = preparedStatement.executeQuery()) {
             if (resultSet.next()) {
-                int count = resultSet.getInt(1);
-                return count == 0;
+                return resultSet.getInt(1) == 0;
             }
         } catch (SQLException | DataAccessException ex) {
             throw new DataAccessException("Error checking isEmpty:" + ex.getMessage());
