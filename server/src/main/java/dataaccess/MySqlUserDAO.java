@@ -25,7 +25,7 @@ public class MySqlUserDAO implements UserDAO {
             }
         }
         catch (SQLException ex) {
-            throw new DataAccessException("Error clearing users table: " + ex.getMessage());
+            throw new DataAccessException("Error getting user from username: " + ex.getMessage());
         }
     }
 

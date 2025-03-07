@@ -23,17 +23,56 @@ public class MySqlAuthDAO implements AuthDAO{
         authTokens.put(auth.authToken(), auth);
     }
 
-    public UserData getUserDataWithUsername(String username) {
-        return usernames.get(username);
+    public UserData getUserDataWithUsername(String username) throws DataAccessException {
+        String sql = "SELECT username, password, email FROM users WHERE username = ?;";
+
+        try (Connection conn = DatabaseManager.getConnection();
+             PreparedStatement preparedStatement = conn.prepareStatement(sql)) {
+            preparedStatement.setString(1, username);
+            try(ResultSet resultSet = preparedStatement.executeQuery()){
+                if(resultSet.next()){
+                    return new UserData(resultSet.getString("username"), resultSet.getString("password"), resultSet.getString("email"));
+                }
+                else{
+                    return null;
+                }
+            }
+        }
+        catch (SQLException | DataAccessException ex) {
+            throw new DataAccessException("Error getting user from username: " + ex.getMessage());
+        }
     }
 
-    public AuthData getAuthDataWithAuthToken(String authToken) {
-        return authTokens.get(authToken);
+    public AuthData getAuthDataWithAuthToken(String authToken) throws DataAccessException {
+        String sql = "SELECT authToken, username FROM auth WHERE authToken = ?;";
+
+        try (Connection conn = DatabaseManager.getConnection();
+             PreparedStatement preparedStatement = conn.prepareStatement(sql)) {
+            preparedStatement.setString(1, authToken);
+            try(ResultSet resultSet = preparedStatement.executeQuery()){
+                if(resultSet.next()){
+                    return new AuthData(resultSet.getString("authToken"), resultSet.getString("username"));
+                }
+                else{
+                    return null;
+                }
+            }
+        }
+        catch (SQLException | DataAccessException ex) {
+            throw new DataAccessException("Error AuthData from authToken: " + ex.getMessage());
+        }
     }
 
-    public void deleteAuth(AuthData auth, UserData user) {
-        authTokens.remove(auth.authToken());
-        usernames.remove(user.username());
+    public void deleteAuth(AuthData auth, UserData user) throws DataAccessException {
+        String sql = "DELETE FROM auth where authToken = ?;";
+        try (Connection conn = DatabaseManager.getConnection();
+             PreparedStatement preparedStatement = conn.prepareStatement(sql)) {
+            preparedStatement.setString(1, auth.authToken());
+            preparedStatement.executeQuery();
+        }
+        catch (Exception ex){
+            throw new DataAccessException("Error AuthData from authToken: " + ex.getMessage());
+        }
     }
 
 
@@ -87,7 +126,4 @@ public class MySqlAuthDAO implements AuthDAO{
             throw new DataAccessException(String.format("Unable to configure database: %s", ex.getMessage()));
         }
     }
-
-
-
 }
