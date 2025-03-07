@@ -21,9 +21,7 @@ public class Server {
     private final JoinGameService joinGameService;
 
     public Server() throws DataAccessException {
-//        InMemoryUserDAO userDAO = new InMemoryUserDAO();
-//        InMemoryAuthDAO authDAO = new InMemoryAuthDAO();
-//        InMemoryGameDAO gameDAO = new InMemoryGameDAO();
+
         UserDAO userDAO = new MySqlUserDAO();
         AuthDAO authDAO = new MySqlAuthDAO();
         GameDAO gameDAO = new MySqlGameDAO();
