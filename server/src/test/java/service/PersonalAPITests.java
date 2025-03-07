@@ -334,5 +334,87 @@ public class PersonalAPITests {
         gameDAO.insertGame(new GameData(12555, "testWhiteUsername", "testBlackUsername", "testName", new ChessGame()));
         assertFalse(gameDAO.isEmpty());
     }
+
+    @Test
+    @DisplayName("insertAuth Positive")
+    public void insertAuthPositive() throws DataAccessException {
+        authDAO.insertAuth(new AuthData("authtoken", "username"), new UserData("username", "password", "email"));
+        assertFalse(authDAO.isEmpty());
+    }
+
+    @Test
+    @DisplayName("insertAuth Negative")
+    public void insertAuthNegative() throws DataAccessException {
+        authDAO.insertAuth(new AuthData("authtoken", "username"), new UserData("username", "password", "email"));
+        assertNull(authDAO.getAuthDataWithAuthToken("noah"));
+    }
+
+    @Test
+    @DisplayName("getUserDataWithUsername Positive")
+    public void getUserDataWithUsernamePositive() throws DataAccessException {
+        authDAO.insertAuth(new AuthData("authtoken", "username"), new UserData("username", "password", "email"));
+        assertNotNull(authDAO.getUserDataWithUsername("username"));
+    }
+
+    @Test
+    @DisplayName("getUserDataWithUsername Negative")
+    public void getUserDataWithUsernameNegative() throws DataAccessException {
+        authDAO.insertAuth(new AuthData("authtoken", "username"), new UserData("username", "password", "email"));
+        assertNull(authDAO.getUserDataWithUsername("noah"));
+    }
+
+    @Test
+    @DisplayName("getAuthDataWithAuthToken Positive")
+    public void getAuthDataWithAuthTokenPositive() throws DataAccessException {
+        authDAO.insertAuth(new AuthData("authtoken", "username"), new UserData("username", "password", "email"));
+        assertNotNull(authDAO.getAuthDataWithAuthToken("authtoken"));
+    }
+
+    @Test
+    @DisplayName("getAuthDataWithAuthToken Negative")
+    public void getAuthDataWithAuthTokenNegative() throws DataAccessException {
+        authDAO.insertAuth(new AuthData("authtoken", "username"), new UserData("username", "password", "email"));
+        assertNull(authDAO.getAuthDataWithAuthToken("noah"));
+    }
+
+    @Test
+    @DisplayName("deleteAuth Positive")
+    public void deleteAuthPositive() throws DataAccessException {
+        authDAO.insertAuth(new AuthData("authtoken", "username"), new UserData("username", "password", "email"));
+        authDAO.deleteAuth(new AuthData("authtoken","username" ), new UserData("username", "password", "email"));
+        assertNull(authDAO.getAuthDataWithAuthToken("authtoken"));
+    }
+
+    @Test
+    @DisplayName("deleteAuth Negative")
+    public void deleteAuthNegative() throws DataAccessException {
+        authDAO.insertAuth(new AuthData("authtoken", "username"), new UserData("username", "password", "email"));
+        assertNotNull(authDAO.getAuthDataWithAuthToken("authtoken"));
+    }
+
+    @Test
+    @DisplayName("Auth isEmpty Positive")
+    public void authIsEmptyPositive() throws DataAccessException {
+        authDAO.insertAuth(new AuthData("authtoken", "username"), new UserData("username", "password", "email"));
+        authDAO.clear();
+        assertTrue(authDAO.isEmpty());
+    }
+
+    @Test
+    @DisplayName("Auth isEmpty Negative")
+    public void AuthIsEmptyNegative() throws DataAccessException {
+        authDAO.insertAuth(new AuthData("authtoken", "username"), new UserData("username", "password", "email"));
+        assertFalse(authDAO.isEmpty());
+    }
+
+    @Test
+    @DisplayName("Clear Auth")
+    public void clearAuth() throws DataAccessException {
+        authDAO.insertAuth(new AuthData("authtoken", "username"), new UserData("username", "password", "email"));
+        authDAO.clear();
+        assertTrue(authDAO.isEmpty());
+    }
+
+
 }
 
