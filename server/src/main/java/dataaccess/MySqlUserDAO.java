@@ -2,19 +2,12 @@ package dataaccess;
 
 import model.UserData;
 import java.sql.*;
-import java.util.HashMap;
-import java.util.Map;
-
-import org.mindrot.jbcrypt.BCrypt;
-import service.HasherHelper;
 
 public class MySqlUserDAO implements UserDAO {
 
     public MySqlUserDAO() throws DataAccessException {
         configureDatabase();
     }
-
-    private Map<String, UserData> users = new HashMap<>();
 
     public UserData getUser(String username) throws DataAccessException {
         String sql = "SELECT username, password, email FROM users WHERE username = ?;";
