@@ -65,29 +65,45 @@ public class MySqlGameDAO implements GameDAO {
     }
 
 
-    public void updateGame(GameData game) {
-        if (allGames.containsKey(game.gameID())) {
-            allGames.put(game.gameID(), game);
+    public void updateGame(GameData game) throws DataAccessException {
+        String sql = "UPDATE games SET whiteUsername = ?, blackUsername = ?, gameName = ?, game = ? WHERE gameID = ?";
+        try (Connection conn = DatabaseManager.getConnection();
+             PreparedStatement preparedStatement = conn.prepareStatement(sql)){
+
+            preparedStatement.setString(1, game.whiteUsername());
+            preparedStatement.setString(2, game.blackUsername());
+            preparedStatement.setString(3, game.gameName());
+            preparedStatement.setString(4, new Gson().toJson(game.game()));
+            preparedStatement.setInt(5, game.gameID());
+            preparedStatement.executeUpdate();
+        } catch(Exception ex){
+            throw new DataAccessException("Error updating game: " + ex.getMessage());
         }
     }
 
-    public List<Map<String, Object>> returnAllGames() {
+    public List<Map<String, Object>> returnAllGames() throws DataAccessException {
         List<Map<String, Object>> gamesList = new ArrayList<>();
+        String sql = "SELECT gameID, whiteUsername, blackUsername, gameName, game FROM games";
 
-        for (GameData game : allGames.values()) {
-            Map<String, Object> gameMap = new HashMap<>();
-            gameMap.put("gameID", game.gameID());
-            gameMap.put("whiteUsername", game.whiteUsername());
-            gameMap.put("blackUsername", game.blackUsername());
-            gameMap.put("gameName", game.gameName());
-            gameMap.put("game", game.game());
-            gamesList.add(gameMap);
+        try (Connection conn = DatabaseManager.getConnection();
+             PreparedStatement preparedStatement = conn.prepareStatement(sql);
+             ResultSet resultSet = preparedStatement.executeQuery()) {
+                while(resultSet.next()){
+                    Map<String, Object> tempMap = new HashMap<>();
+                    tempMap.put("gameID", resultSet.getInt("gameID"));
+                    tempMap.put("whiteUsername", resultSet.getString("whiteUsername"));
+                    tempMap.put("blackUsername", resultSet.getString("blackUsername"));
+                    tempMap.put("gameName", resultSet.getString("gameName"));
+                    tempMap.put("game", resultSet.getString("game"));
+                    gamesList.add(tempMap);
+                }
+            return gamesList;
+        } catch (Exception ex) {
+            throw new DataAccessException("Error returning all games: " + ex.getMessage());
         }
-
-        return gamesList;
     }
 
-    public void clear() throws DataAccessException {
+        public void clear() throws DataAccessException {
         String sql = "DELETE FROM games";
 
         try (Connection conn = DatabaseManager.getConnection();
