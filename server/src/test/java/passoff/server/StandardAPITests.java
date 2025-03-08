@@ -45,7 +45,7 @@ public class StandardAPITests {
             newUser = new TestUser("NewUser", "newUserPassword", "nu@mail.com");
 
             createRequest = new TestCreateRequest("testGame");
-        } catch (Exception ex){
+        } catch (DataAccessException ex){
             throw new RuntimeException("Failure to initiate server", ex);
         }
     }
