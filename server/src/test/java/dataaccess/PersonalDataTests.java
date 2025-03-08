@@ -19,13 +19,7 @@ public class PersonalDataTests {
     private GameDAO gameDAO;
     private AuthDAO authDAO;
 
-    private ClearService clearService;
     private RegisterService registerService;
-    private LoginService loginService;
-    private LogoutService logoutService;
-    private ListGameService listGameService;
-    private CreateGameService createGameService;
-    private JoinGameService joinGameService;
 
     @BeforeEach
     void setUp() {
@@ -33,13 +27,8 @@ public class PersonalDataTests {
         this.gameDAO = new InMemoryGameDAO();
         this.authDAO = new InMemoryAuthDAO();
 
-        this.clearService = new ClearService(userDAO, gameDAO, authDAO);
         this.registerService = new RegisterService(userDAO, authDAO);
-        this.loginService = new LoginService(authDAO);
-        this.logoutService = new LogoutService(authDAO);
-        this.listGameService = new ListGameService(gameDAO, authDAO);
-        this.createGameService = new CreateGameService(gameDAO, authDAO);
-        this.joinGameService = new JoinGameService(gameDAO, authDAO);
+
     }
 
     @Test
