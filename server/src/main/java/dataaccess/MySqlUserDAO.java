@@ -6,8 +6,12 @@ import service.DatabaseHelper;
 
 public class MySqlUserDAO implements UserDAO {
 
-    public MySqlUserDAO() throws DataAccessException {
-        DatabaseHelper.configureDatabase(createStatements);
+    public MySqlUserDAO() {
+        try {
+            DatabaseHelper.configureDatabase(createStatements);
+        } catch (DataAccessException ex) {
+            throw new RuntimeException("Error with userDAO constructor", ex);
+        }
     }
 
     public UserData getUser(String username) throws DataAccessException {

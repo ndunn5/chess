@@ -20,20 +20,24 @@ public class Server {
     private final CreateGameService createGameService;
     private final JoinGameService joinGameService;
 
-    public Server() throws DataAccessException {
+    public Server() {
+        try {
+            UserDAO userDAO = new MySqlUserDAO();
+            AuthDAO authDAO = new MySqlAuthDAO();
+            GameDAO gameDAO = new MySqlGameDAO();
 
-        UserDAO userDAO = new MySqlUserDAO();
-        AuthDAO authDAO = new MySqlAuthDAO();
-        GameDAO gameDAO = new MySqlGameDAO();
 
+            this.clearService = new ClearService(userDAO, gameDAO, authDAO);
+            this.registerService = new RegisterService(userDAO, authDAO);
+            this.loginService = new LoginService(authDAO);
+            this.logoutService = new LogoutService(authDAO);
+            this.listGameService = new ListGameService(gameDAO, authDAO);
+            this.createGameService = new CreateGameService(gameDAO, authDAO);
+            this.joinGameService = new JoinGameService(gameDAO, authDAO);
+        }catch (Exception ex){
+            throw new RuntimeException("Server Data Access Exception", ex);
+        }
 
-        this.clearService = new ClearService(userDAO, gameDAO, authDAO);
-        this.registerService = new RegisterService(userDAO, authDAO);
-        this.loginService = new LoginService(authDAO);
-        this.logoutService = new LogoutService(authDAO);
-        this.listGameService = new ListGameService(gameDAO, authDAO);
-        this.createGameService = new CreateGameService(gameDAO, authDAO);
-        this.joinGameService = new JoinGameService(gameDAO, authDAO);
     }
 
     public int run(int desiredPort) {

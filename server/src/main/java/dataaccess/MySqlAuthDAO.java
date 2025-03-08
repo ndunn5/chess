@@ -11,9 +11,14 @@ import java.sql.SQLException;
 
 public class MySqlAuthDAO implements AuthDAO{
 
-    public MySqlAuthDAO() throws DataAccessException {
-        DatabaseHelper.configureDatabase(createStatements);
+    public MySqlAuthDAO() {
+        try {
+            DatabaseHelper.configureDatabase(createStatements);
+        } catch (DataAccessException ex) {
+            throw new RuntimeException("Error with AuthDAO constructor", ex);
+        }
     }
+
 
     public void insertAuth(AuthData auth, UserData user) throws DataAccessException{
         String sql = "INSERT INTO auth (authToken, username) VALUES (?, ?)";

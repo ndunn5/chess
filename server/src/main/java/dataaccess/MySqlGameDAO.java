@@ -16,8 +16,13 @@ import com.google.gson.Gson;
 import model.UserData;
 
 public class MySqlGameDAO implements GameDAO {
-    public MySqlGameDAO() throws DataAccessException {
-        DatabaseHelper.configureDatabase(createStatements);
+
+    public MySqlGameDAO() {
+        try {
+            DatabaseHelper.configureDatabase(createStatements);
+        } catch (DataAccessException ex) {
+            throw new RuntimeException("Error with GameDAO constructor", ex);
+        }
     }
 
     private Map<Integer, GameData> allGames = new HashMap<>();
