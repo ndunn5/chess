@@ -1,6 +1,7 @@
 package server;
 import com.google.gson.Gson;
 import extramodel.ClearDatabaseResult;
+import extramodel.JoinGameRequest;
 import model.ClearDatabaseRequest;
 import exception.ErrorResponse;
 import exception.ResponseException;
@@ -18,9 +19,38 @@ public class ServerFacade {
 
     public void handleClearDatabase() throws ResponseException {
         var path = "/db";
-        this.makeRequest("DELETE", path, null, null);
+        this.makeRequest("DELETE", path, null, ClearDatabaseResult.class);
     }
 
+    public void handleRegister(RegisterRequest registerRequest) throws ResponseException {
+        var path = "/user";
+        this.makeRequest("POST", path, registerRequest, RegisterResult.class);
+    }
+
+    public void handleLogin(LoginRequest loginRequest) throws ResponseException {
+        var path = "/session";
+        this.makeRequest("POST", path, loginRequest, LoginResult.class);
+    }
+
+    public void handleLogout(LogoutRequest logoutRequest) throws ResponseException {
+        var path = "/session";
+        this.makeRequest("DELETE", path, logoutRequest, LogoutResult.class);
+    }
+
+    public void handleListGames(ListGamesRequest listGamesRequest) throws ResponseException {
+        var path = "/game";
+        this.makeRequest("GET", path, listGamesRequest, ListGamesResult.class);
+    }
+
+    public void handleJoinGame(JoinGameRequest joinGameRequest) throws ResponseException {
+        var path = "/game";
+        this.makeRequest("PUT", path, joinGameRequest, JoinGameResult.class);
+    }
+
+    public void handleCreateGame(CreateGameRequest createGameRequest) throws ResponseException {
+        var path = "/game";
+        this.makeRequest("POST", path, createGameRequest, CreateGameResult.class);
+    }
 
     private <T> T makeRequest(String method, String path, Object request, Class<T> responseClass) throws ResponseException {
         try {
