@@ -3,7 +3,7 @@ package client;
 import org.junit.jupiter.api.*;
 import server.Server;
 
-
+//serverfacade->repl -> prelogin client and then the rest
 public class ServerFacadeTests {
 
     private static Server server;
