@@ -11,7 +11,7 @@ public class Repl {
     }
 
     public void run() {
-        System.out.println("\uD83D\uDC36 Welcome to the pet store. Sign in to start.");
+        System.out.println("\uD83D\uDC51 Welcome to 240 chess. Type help to get started. \uD83D\uDC51");
         System.out.print(preLoginClient.help());
 
         Scanner scanner = new Scanner(System.in);
@@ -22,7 +22,7 @@ public class Repl {
 
             try {
                 result = preLoginClient.eval(line);
-                System.out.print(EscapeSequences.SET_BG_COLOR_BLUE + result);
+                System.out.print(EscapeSequences.SET_BG_COLOR_WHITE + result);
             } catch (Throwable e) {
                 var msg = e.toString();
                 System.out.print(msg);
@@ -32,7 +32,7 @@ public class Repl {
     }
 
     private void printPrompt() {
-        System.out.print("\n" + EscapeSequences.RESET_BG_COLOR + ">>> " + EscapeSequences.SET_BG_COLOR_GREEN);
+        System.out.print("\n" + EscapeSequences.RESET_BG_COLOR + ">>> " + EscapeSequences.SET_BG_COLOR_BLUE);
     }
 
 }
