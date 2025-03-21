@@ -8,13 +8,12 @@ public class Main {
         if (args.length == 1) {
             serverUrl = args[0];
         }
-
-//        try {
-//            new ServerFacade(serverUrl).handleClearDatabase(); // Clear DB before running REPL
-//            System.out.println("Database reset successfully.");
-//        } catch (Exception e) {
-//            System.out.println("Failed to clear database: " + e.getMessage());
-//        }
+        try {
+            new ServerFacade(serverUrl).handleClearDatabase();
+            System.out.println("Database reset successfully.");
+        } catch (Exception e) {
+            System.out.println("Failed to clear database: " + e.getMessage());
+        }
         new Repl(serverUrl).run();
     }
 }

@@ -53,6 +53,7 @@ public class MySqlUserDAO implements UserDAO {
     public void insertUser(UserData user) throws DataAccessException {
         String sql = "INSERT INTO users (username, password, email) VALUES (?, ?, ?)";
 
+
         try (Connection conn = DatabaseManager.getConnection();
              PreparedStatement preparedStatement = conn.prepareStatement(sql)) {
 

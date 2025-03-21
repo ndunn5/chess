@@ -63,7 +63,10 @@ public class PreLoginClient {
             return signedInState;
         }
         if (params.length == 2) {
-            server.handleLogin(new LoginRequest(params[0], params[1]));
+            String response = server.handleLogin(new LoginRequest(params[0], params[1]));
+            if (response.startsWith("Error")) {
+                throw new ResponseException(400, response);
+            }
             state = State.SIGNEDIN;
             visitorName = params[0];
             return String.format("You signed in as %s.", visitorName);

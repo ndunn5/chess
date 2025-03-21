@@ -25,16 +25,21 @@ public class ServerFacade {
     public String handleRegister(RegisterRequest registerRequest) throws ResponseException {
         var path = "/user";
         try{
-            RegisterResult result = this.makeRequest("POST", path, registerRequest, RegisterResult.class);
+            this.makeRequest("POST", path, registerRequest, RegisterResult.class);
             return "Registration successful!";
         } catch (ResponseException e){
-            return "Error: " + e.getMessage();
+            return e.getMessage();
         }
     }
 
-    public void handleLogin(LoginRequest loginRequest) throws ResponseException {
+    public String handleLogin(LoginRequest loginRequest) throws ResponseException {
         var path = "/session";
-        this.makeRequest("POST", path, loginRequest, LoginResult.class);
+        try{
+            this.makeRequest("POST", path, loginRequest, LoginResult.class);
+            return "Registration successful!";
+        } catch (ResponseException e) {
+            return e.getMessage();
+        }
     }
 
     public void handleLogout(LogoutRequest logoutRequest) throws ResponseException {
