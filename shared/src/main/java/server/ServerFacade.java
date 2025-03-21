@@ -22,23 +22,24 @@ public class ServerFacade {
         this.makeRequest("DELETE", path, null, ClearDatabaseResult.class);
     }
 
-    public String handleRegister(RegisterRequest registerRequest) throws ResponseException {
+    public RegisterResult handleRegister(RegisterRequest registerRequest) throws ResponseException {
         var path = "/user";
         try{
-            this.makeRequest("POST", path, registerRequest, RegisterResult.class);
-            return "Registration successful!";
+            RegisterResult registerResult = this.makeRequest("POST", path, registerRequest, RegisterResult.class);
+            return registerResult;
         } catch (ResponseException e){
-            return e.getMessage();
+            throw new ResponseException(400, e.getMessage());
         }
     }
 
-    public String handleLogin(LoginRequest loginRequest) throws ResponseException {
+    public LoginResult handleLogin(LoginRequest loginRequest) throws ResponseException {
         var path = "/session";
         try{
-            this.makeRequest("POST", path, loginRequest, LoginResult.class);
-            return "Registration successful!";
+            LoginResult loginResult = this.makeRequest("POST", path, loginRequest, LoginResult.class);
+
+            return loginResult;
         } catch (ResponseException e) {
-            return e.getMessage();
+            throw new ResponseException(400, e.getMessage());
         }
     }
 

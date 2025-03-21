@@ -1,7 +1,9 @@
 package ui;
 
 import model.LoginRequest;
+import model.LoginResult;
 import model.RegisterRequest;
+import model.RegisterResult;
 import server.ServerFacade;
 import exception.ResponseException;
 
@@ -11,6 +13,7 @@ public class PreLoginClient {
     private String visitorName = null;
     private final ServerFacade server;
     private final String serverUrl;
+    private String authToken = null;
     private State state = State.SIGNEDOUT;
 
     public PreLoginClient(String serverUrl) {
@@ -63,13 +66,16 @@ public class PreLoginClient {
             return signedInState;
         }
         if (params.length == 2) {
-            String response = server.handleLogin(new LoginRequest(params[0], params[1]));
-            if (response.startsWith("Error")) {
-                throw new ResponseException(400, response);
+            try{
+                LoginResult loginResult = server.handleLogin(new LoginRequest(params[0], params[1]));
+                state = State.SIGNEDIN;
+                visitorName = params[0];
+                authToken = loginResult.authToken();
+                return String.format("You signed in as %s.", visitorName);
             }
-            state = State.SIGNEDIN;
-            visitorName = params[0];
-            return String.format("You signed in as %s.", visitorName);
+            catch (ResponseException e){
+                throw new ResponseException(400, e.getMessage());
+            }
         }
         throw new ResponseException(400, "Expected: <USERNAME> <PASSWORD>");
     }
@@ -80,15 +86,21 @@ public class PreLoginClient {
             return signedInState;
         }
         if (params.length == 3) {
-            String response = server.handleRegister(new RegisterRequest(params[0], params[1], params[2]));
-            if (response.startsWith("Error")) {
-                throw new ResponseException(400, response);
+            try{
+                RegisterResult registerResult = server.handleRegister(new RegisterRequest(params[0], params[1], params[2]));
+                state = State.SIGNEDIN;
+                visitorName = params[0];
+                authToken = registerResult.authToken();
+                return String.format("You signed in as %s.", visitorName);
+            } catch (ResponseException e){
+                throw new ResponseException(400, e.getMessage());
             }
-            state = State.SIGNEDIN;
-            visitorName = params[0];
-            return String.format("You signed in as %s.", visitorName);
         }
         throw new ResponseException(400, "Expected: <USERNAME> <PASSWORD> <EMAIL>");
+    }
+
+    public String getAuthToken(){
+        return authToken;
     }
 }
 
