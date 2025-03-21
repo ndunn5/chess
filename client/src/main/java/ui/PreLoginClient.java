@@ -26,10 +26,20 @@ public class PreLoginClient {
             return switch (cmd) {
                 case "register" -> register(params);
                 case "quit" -> "quit";
+                case "login" -> login(params);
                 default -> help();
             };
         } catch (ResponseException ex) {
             return ex.getMessage();
+        }
+    }
+
+    private String checkSignedOut(){
+        if (state != state.SIGNEDOUT){
+            return "you have to be signed out for this command";
+        }
+        else{
+            return null;
         }
     }
 
@@ -48,9 +58,27 @@ public class PreLoginClient {
         }
     }
 
+    public String login(String... params) throws ResponseException {
+        String signedInState = checkSignedOut();
+        if (signedInState != null){
+            return signedInState;
+        }
+        if (params.length == 2) {
+            server.handleLogin(new LoginRequest(params[0], params[1]));
+            state = State.SIGNEDIN;
+            visitorName = params[0];
+            return String.format("You signed in as %s.", visitorName);
+        }
+        throw new ResponseException(400, "Expected: <USERNAME> <PASSWORD>");
+    }
+
     public String register(String... params) throws ResponseException {
+        String signedInState = checkSignedOut();
+        if (signedInState != null){
+            return signedInState;
+        }
         if (params.length == 3) {
-            server.handleRegister(new RegisterRequest(params[0], params[1], params[2]));
+            server.handleRegister(new RegisterRequest(params[0], params[1], params[2]));//returns atuthtoken so dnt ned handle login
             server.handleLogin(new LoginRequest(params[0], params[1]));
             state = State.SIGNEDIN;
             visitorName = params[0];
