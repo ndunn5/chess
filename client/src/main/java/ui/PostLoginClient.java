@@ -1,10 +1,7 @@
 package ui;
 
 import exception.ResponseException;
-import model.LoginRequest;
-import model.LoginResult;
-import model.LogoutRequest;
-import model.LogoutResult;
+import model.*;
 import server.ServerFacade;
 
 import java.util.Arrays;
@@ -35,6 +32,7 @@ public class PostLoginClient {
             var params = Arrays.copyOfRange(tokens, 1, tokens.length);
             return switch (cmd) {
                 case "logout" -> logout();
+                case "create" -> createGame(params);
                 default -> help();
             };
         } catch (ResponseException ex) {
@@ -72,5 +70,17 @@ public class PostLoginClient {
         } catch (ResponseException e) {
             throw new ResponseException(400, e.getMessage());
         }
+    }
+
+    public String createGame(String... params) throws ResponseException {
+        if (params.length == 1) {
+            try {
+                CreateGameResult createGameResult = server.handleCreateGame(new CreateGameRequest(PreLoginClient.getAuthToken(), params[0]));
+                return String.format("created game, %s", params[0]);
+            } catch (ResponseException e) {
+                throw new ResponseException(400, e.getMessage());
+            }
+        }
+        throw new ResponseException(400, "Expected: <NAME>");
     }
 }
