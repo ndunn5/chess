@@ -5,9 +5,12 @@ import java.util.Scanner;
 
 public class Repl {
     private final PreLoginClient preLoginClient;
+    private final PostLoginClient postLoginClient;
+    private static State state = State.SIGNEDOUT;
 
     public Repl(String serverUrl) {
         preLoginClient = new PreLoginClient(serverUrl);
+        postLoginClient = new PostLoginClient(serverUrl);
     }
 
     public void run() {
@@ -21,7 +24,10 @@ public class Repl {
             String line = scanner.nextLine();
 
             try {
-                result = preLoginClient.eval(line);
+                switch(state){
+                    case SIGNEDOUT -> result = preLoginClient.eval(line);
+                    case SIGNEDIN -> result = postLoginClient.eval(line);
+                }
                 System.out.print(EscapeSequences.SET_BG_COLOR_WHITE + result);
             } catch (Throwable e) {
                 var msg = e.toString();
@@ -33,6 +39,14 @@ public class Repl {
 
     private void printPrompt() {
         System.out.print("\n" + EscapeSequences.RESET_BG_COLOR + ">>> " + EscapeSequences.SET_BG_COLOR_BLUE);
+    }
+
+    public static State getState(){
+        return state;
+    }
+
+    public static void updateState(State newState){
+        state = newState;
     }
 
 }

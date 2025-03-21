@@ -43,9 +43,14 @@ public class ServerFacade {
         }
     }
 
-    public void handleLogout(LogoutRequest logoutRequest) throws ResponseException {
+    public LogoutResult handleLogout(LogoutRequest logoutRequest) throws ResponseException {
         var path = "/session";
-        this.makeRequest("DELETE", path, logoutRequest, LogoutResult.class);
+        try{
+            LogoutResult logoutResult = this.makeRequest("DELETE", path, logoutRequest, LogoutResult.class);
+            return logoutResult;
+        } catch (ResponseException e) {
+            throw new ResponseException(400, e.getMessage());
+        }
     }
 
     public void handleListGames(ListGamesRequest listGamesRequest) throws ResponseException {
