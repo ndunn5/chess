@@ -22,9 +22,14 @@ public class ServerFacade {
         this.makeRequest("DELETE", path, null, ClearDatabaseResult.class);
     }
 
-    public void handleRegister(RegisterRequest registerRequest) throws ResponseException {
+    public String handleRegister(RegisterRequest registerRequest) throws ResponseException {
         var path = "/user";
-        this.makeRequest("POST", path, registerRequest, RegisterResult.class);
+        try{
+            RegisterResult result = this.makeRequest("POST", path, registerRequest, RegisterResult.class);
+            return "Registration successful!";
+        } catch (ResponseException e){
+            return "Error: " + e.getMessage();
+        }
     }
 
     public void handleLogin(LoginRequest loginRequest) throws ResponseException {
@@ -66,6 +71,8 @@ public class ServerFacade {
         } catch (ResponseException ex) {
             throw ex;
         } catch (Exception ex) {
+            ex.printStackTrace();
+            System.out.println("Error message: " + ex.getMessage());
             throw new ResponseException(500, ex.getMessage());
         }
     }

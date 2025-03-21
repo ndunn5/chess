@@ -34,11 +34,10 @@ public class PreLoginClient {
         }
     }
 
-    private String checkSignedOut(){
-        if (state != state.SIGNEDOUT){
+    private String checkSignedOut() {
+        if (state != state.SIGNEDOUT) {
             return "you have to be signed out for this command";
-        }
-        else{
+        } else {
             return null;
         }
     }
@@ -60,7 +59,7 @@ public class PreLoginClient {
 
     public String login(String... params) throws ResponseException {
         String signedInState = checkSignedOut();
-        if (signedInState != null){
+        if (signedInState != null) {
             return signedInState;
         }
         if (params.length == 2) {
@@ -74,12 +73,14 @@ public class PreLoginClient {
 
     public String register(String... params) throws ResponseException {
         String signedInState = checkSignedOut();
-        if (signedInState != null){
+        if (signedInState != null) {
             return signedInState;
         }
         if (params.length == 3) {
-            server.handleRegister(new RegisterRequest(params[0], params[1], params[2]));//returns atuthtoken so dnt ned handle login
-            server.handleLogin(new LoginRequest(params[0], params[1]));
+            String response = server.handleRegister(new RegisterRequest(params[0], params[1], params[2]));
+            if (response.startsWith("Error")) {
+                throw new ResponseException(400, response);
+            }
             state = State.SIGNEDIN;
             visitorName = params[0];
             return String.format("You signed in as %s.", visitorName);
