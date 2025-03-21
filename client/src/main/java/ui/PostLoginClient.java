@@ -66,7 +66,6 @@ public class PostLoginClient {
             return signedInState;
         }
         try {
-            System.out.print(PreLoginClient.getAuthToken());
             LogoutResult logoutResult = server.handleLogout(new LogoutRequest(PreLoginClient.getAuthToken()));
             Repl.updateState(State.SIGNEDOUT);
             return "You signed out";
