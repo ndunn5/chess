@@ -53,9 +53,14 @@ public class ServerFacade {
         }
     }
 
-    public void handleListGames(ListGamesRequest listGamesRequest) throws ResponseException {
+    public ListGamesResult handleListGames(ListGamesRequest listGamesRequest) throws ResponseException {
         var path = "/game";
-        this.makeRequest("GET", path, listGamesRequest, ListGamesResult.class, null);
+        try{
+            ListGamesResult listGamesResult = this.makeRequest("GET", path, null, ListGamesResult.class, listGamesRequest.authToken());
+            return listGamesResult;
+        } catch (ResponseException e) {
+            throw new ResponseException(400, e.getMessage());
+        }
     }
 
     public void handleJoinGame(JoinGameRequest joinGameRequest) throws ResponseException {

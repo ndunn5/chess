@@ -1,15 +1,19 @@
 package ui;
 
+import chess.ChessGame;
 import exception.ResponseException;
 import model.*;
 import server.ServerFacade;
 
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class PostLoginClient {
     private final ServerFacade server;
     private final String serverUrl;
-
+    private Map<Integer, Double> listGameIdsToRealGameIDs = new HashMap<>();
 
     public PostLoginClient(String serverUrl) {
         server = new ServerFacade(serverUrl);
@@ -33,6 +37,7 @@ public class PostLoginClient {
             return switch (cmd) {
                 case "logout" -> logout();
                 case "create" -> createGame(params);
+                case "list" -> listGames();
                 default -> help();
             };
         } catch (ResponseException ex) {
@@ -82,5 +87,23 @@ public class PostLoginClient {
             }
         }
         throw new ResponseException(400, "Expected: <NAME>");
+    }
+
+    public String listGames() throws ResponseException {
+        try {
+            ListGamesResult listGamesResult = server.handleListGames(new ListGamesRequest(PreLoginClient.getAuthToken()));
+            String returnString = "";
+            int screenID = 1;
+            for (Map<String, Object> game : listGamesResult.games()) {
+                String gameName = (String) game.get("gameName");
+                returnString += screenID + "\t" + gameName + "\n";
+                double gameID = (Double) game.get("gameID");
+                listGameIdsToRealGameIDs.put(screenID, gameID);
+                screenID ++;
+            }
+            return returnString;
+        } catch (ResponseException e) {
+            throw new ResponseException(400, e.getMessage());
+        }
     }
 }
