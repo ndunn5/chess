@@ -2,6 +2,7 @@ package ui;
 
 import chess.ChessGame;
 import exception.ResponseException;
+import extramodel.JoinGameRequest;
 import model.*;
 import server.ServerFacade;
 
@@ -13,7 +14,7 @@ import java.util.Map;
 public class PostLoginClient {
     private final ServerFacade server;
     private final String serverUrl;
-    private Map<Integer, Double> listGameIdsToRealGameIDs = new HashMap<>();
+    private Map<Integer, Integer> listGameIdsToRealGameIDs = new HashMap<>();
 
     public PostLoginClient(String serverUrl) {
         server = new ServerFacade(serverUrl);
@@ -31,13 +32,14 @@ public class PostLoginClient {
 
     public String eval(String input) {
         try {
-            var tokens = input.toLowerCase().split(" ");
+            var tokens = input.split(" ");
             var cmd = (tokens.length > 0) ? tokens[0] : "help";
             var params = Arrays.copyOfRange(tokens, 1, tokens.length);
             return switch (cmd) {
                 case "logout" -> logout();
                 case "create" -> createGame(params);
                 case "list" -> listGames();
+                case "join" -> joinGame(params);
                 default -> help();
             };
         } catch (ResponseException ex) {
@@ -89,7 +91,7 @@ public class PostLoginClient {
         throw new ResponseException(400, "Expected: <NAME>");
     }
 
-    public String listGames() throws ResponseException {
+    public String listGames() throws ResponseException {//if its empty then lets print there arent any games
         try {
             ListGamesResult listGamesResult = server.handleListGames(new ListGamesRequest(PreLoginClient.getAuthToken()));
             String returnString = "";
@@ -97,13 +99,30 @@ public class PostLoginClient {
             for (Map<String, Object> game : listGamesResult.games()) {
                 String gameName = (String) game.get("gameName");
                 returnString += screenID + "\t" + gameName + "\n";
-                double gameID = (Double) game.get("gameID");
+                Number gameIDObj = (Number) game.get("gameID");
+                int gameID = gameIDObj.intValue();
                 listGameIdsToRealGameIDs.put(screenID, gameID);
-                screenID ++;
+                screenID++;
             }
             return returnString;
         } catch (ResponseException e) {
             throw new ResponseException(400, e.getMessage());
         }
+    }
+
+    public String joinGame(String... params) throws ResponseException { //if I havent listed them then handle that
+        if (params.length == 2) {
+            try {
+                int screenID = Integer.parseInt(params[0]);
+                int gameID = listGameIdsToRealGameIDs.get(screenID);
+                JoinGameRequest joinGameRequest = new JoinGameRequest(params[1], gameID);
+                joinGameRequest.addAuthToken(PreLoginClient.getAuthToken());
+                JoinGameResult joinGameResult = server.handleJoinGame(joinGameRequest);
+                return String.format("joined game: %s", gameID);
+            } catch (ResponseException e) {
+                throw new ResponseException(400, e.getMessage());
+            }
+        }
+        throw new ResponseException(400, "Expected: <ID> <WHITE|BLACK>");
     }
 }
