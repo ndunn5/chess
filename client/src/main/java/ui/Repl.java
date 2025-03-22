@@ -6,11 +6,13 @@ import java.util.Scanner;
 public class Repl {
     private final PreLoginClient preLoginClient;
     private final PostLoginClient postLoginClient;
+    private final GamePlay gamePlay;
     private static State state = State.SIGNEDOUT;
 
     public Repl(String serverUrl) {
         preLoginClient = new PreLoginClient(serverUrl);
         postLoginClient = new PostLoginClient(serverUrl);
+        gamePlay = new GamePlay(serverUrl);
     }
 
     public void run() {
@@ -27,6 +29,7 @@ public class Repl {
                 switch(state){
                     case SIGNEDOUT -> result = preLoginClient.eval(line);
                     case SIGNEDIN -> result = postLoginClient.eval(line);
+                    case GAMEPLAY -> result = gamePlay.eval(line);
                 }
                 System.out.print(EscapeSequences.SET_BG_COLOR_WHITE + result);
             } catch (Throwable e) {

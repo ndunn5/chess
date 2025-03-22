@@ -1,5 +1,6 @@
 package ui;
 
+import chess.ChessBoard;
 import chess.ChessGame;
 import exception.ResponseException;
 import extramodel.JoinGameRequest;
@@ -14,11 +15,13 @@ import java.util.Map;
 public class PostLoginClient {
     private final ServerFacade server;
     private final String serverUrl;
-    private Map<Integer, Integer> listGameIdsToRealGameIDs = new HashMap<>();
+    private Map<Integer, Map<String, Object>> screenIDToGameDetails = new HashMap<>();
+    private GamePlay gamePlay;
 
     public PostLoginClient(String serverUrl) {
         server = new ServerFacade(serverUrl);
         this.serverUrl = serverUrl;
+        gamePlay = new GamePlay(serverUrl);
     }
 
     private String checkSignedIn() {
@@ -98,10 +101,19 @@ public class PostLoginClient {
             int screenID = 1;
             for (Map<String, Object> game : listGamesResult.games()) {
                 String gameName = (String) game.get("gameName");
-                returnString += screenID + "\t" + gameName + "\n";
-                Number gameIDObj = (Number) game.get("gameID");
-                int gameID = gameIDObj.intValue();
-                listGameIdsToRealGameIDs.put(screenID, gameID);
+                String whiteUser = (String) game.get("whiteUsername");
+                if (whiteUser == null){
+                    whiteUser = "You can join as White";
+                }
+                String blackUser = (String) game.get("blackUsername");
+                if (blackUser == null){
+                    blackUser = "You can join as Black";
+                }
+                returnString += screenID + "\t" + gameName + "\n" +
+                        "\tWhite User: " + whiteUser + "\n" +
+                        "\tBlack User: " + blackUser + "\n"
+                ;
+                screenIDToGameDetails.put(screenID, game);
                 screenID++;
             }
             return returnString;
@@ -114,10 +126,17 @@ public class PostLoginClient {
         if (params.length == 2) {
             try {
                 int screenID = Integer.parseInt(params[0]);
-                int gameID = listGameIdsToRealGameIDs.get(screenID);
+                Map<String, Object> gameDetails = screenIDToGameDetails.get(screenID);
+
+                Number gameIDObj = (Number) gameDetails.get("gameID");
+                int gameID = gameIDObj.intValue();
+
                 JoinGameRequest joinGameRequest = new JoinGameRequest(params[1], gameID);
                 joinGameRequest.addAuthToken(PreLoginClient.getAuthToken());
                 JoinGameResult joinGameResult = server.handleJoinGame(joinGameRequest);
+//                Repl.updateState(State.GAMEPLAY);
+
+                gamePlay.showBoard(new ChessBoard(), params[1]);
                 return String.format("joined game: %s", gameID);
             } catch (ResponseException e) {
                 throw new ResponseException(400, e.getMessage());
