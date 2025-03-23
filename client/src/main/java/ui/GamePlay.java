@@ -1,6 +1,12 @@
 package ui;
 
 import chess.ChessBoard;
+import chess.ChessPiece;
+import chess.ChessPosition;
+import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import exception.ResponseException;
 import model.LogoutRequest;
 import model.LogoutResult;
@@ -34,8 +40,18 @@ public class GamePlay {
         }
     }
 
-    public void showBoard(ChessBoard boardState, String whiteOrBlack){
-        System.out.print("This is where the board will be printed. It needs to take in an object in and also white orientation or black orientation");
+    public String showBoard(String boardState, String whiteOrBlack){
+//        "This is where the board will be printed. It needs to take in an object in and also white orientation or black orientation";
+        Gson gson = new Gson();
+
+        JsonObject jsonObject = JsonParser.parseString(boardState).getAsJsonObject();
+        JsonObject boardObject = jsonObject.getAsJsonObject("board");
+        ChessBoard board = gson.fromJson(boardObject, ChessBoard.class);
+
+        ChessPiece testPiece = board.getPiece(new ChessPosition(1,1));
+        System.out.println(testPiece);
+
+        return boardState + whiteOrBlack;
     }
 
 

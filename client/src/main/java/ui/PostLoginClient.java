@@ -2,6 +2,8 @@ package ui;
 
 import chess.ChessBoard;
 import chess.ChessGame;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
 import exception.ResponseException;
 import extramodel.JoinGameRequest;
 import model.*;
@@ -123,21 +125,22 @@ public class PostLoginClient {
     }
 
     public String joinGame(String... params) throws ResponseException { //if I havent listed them then handle that
+        //also have to handle if someone has already joined for that color?
         if (params.length == 2) {
             try {
                 int screenID = Integer.parseInt(params[0]);
                 Map<String, Object> gameDetails = screenIDToGameDetails.get(screenID);
-
                 Number gameIDObj = (Number) gameDetails.get("gameID");
                 int gameID = gameIDObj.intValue();
+                String currentBoard = (String) gameDetails.get("game");
+
 
                 JoinGameRequest joinGameRequest = new JoinGameRequest(params[1], gameID);
                 joinGameRequest.addAuthToken(PreLoginClient.getAuthToken());
                 JoinGameResult joinGameResult = server.handleJoinGame(joinGameRequest);
-//                Repl.updateState(State.GAMEPLAY);
+                Repl.updateState(State.GAMEPLAY);
 
-                gamePlay.showBoard(new ChessBoard(), params[1]);
-                return String.format("joined game: %s", gameID);
+                return gamePlay.showBoard(currentBoard, params[1]);
             } catch (ResponseException e) {
                 throw new ResponseException(400, e.getMessage());
             }
