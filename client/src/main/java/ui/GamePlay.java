@@ -61,27 +61,64 @@ public class GamePlay {
     public String drawWhiteBoard(ChessBoard board, String whiteOrBlack) {
         StringBuilder boardDisplay = new StringBuilder();
 
-        for (int i = 0; i < 10; i++) {
-            if (i == 0 || i == 9) {
-                boardDisplay.append(printHeaderAndFooter(whiteOrBlack) + "\n");
+        for(int row = 0; row < 10; row++){
+            if (row == 0 || row == 9) {
+                boardDisplay.append(drawHeaderAndFooter(whiteOrBlack) + "\n");
+            }
+            else{
+                boardDisplay.append(drawMiddle(board, row, whiteOrBlack) + "\n");
             }
         }
 
         return boardDisplay.toString();
     }
 
-    private StringBuilder printHeaderAndFooter(String color) {
+    private StringBuilder drawHeaderAndFooter(String color) {
         StringBuilder headerAndFooterBuilder = new StringBuilder();
         headerAndFooterBuilder.append(EscapeSequences.SET_BG_COLOR_DARK_GREY);
 
         for (String letter : sideLetters) {
-            headerAndFooterBuilder.append(EscapeSequences.SET_TEXT_COLOR_WHITE + letter + "   ");
+            headerAndFooterBuilder.append(EscapeSequences.SET_TEXT_COLOR_WHITE + " " + letter + " ");
         }
 
         headerAndFooterBuilder.append(EscapeSequences.RESET_BG_COLOR);
         headerAndFooterBuilder.append(EscapeSequences.RESET_TEXT_COLOR);
 
         return headerAndFooterBuilder;
+    }
+
+    private StringBuilder drawMiddle(ChessBoard board, int row, String color) {
+        StringBuilder middleLine = new StringBuilder();
+        for(int col = 0; col < 10; col++){
+            if(color.equals("WHITE")){
+                if(col == 0 || col == 9){
+                    middleLine.append(EscapeSequences.SET_BG_COLOR_DARK_GREY);
+                    middleLine.append(EscapeSequences.SET_TEXT_COLOR_WHITE + " " + sideNumbers.get(row) + " ");
+                }else{
+
+                    if ((row + col) % 2 == 0) {
+                        middleLine.append(EscapeSequences.SET_BG_COLOR_WHITE);
+                    } else {
+                        middleLine.append(EscapeSequences.SET_BG_COLOR_DARK_GREEN);
+                    }
+
+                    ChessPiece piece = board.getPiece(new ChessPosition(row, col));
+                    if (piece != null) {
+                        middleLine.append(EscapeSequences.SET_TEXT_COLOR_BLACK + " " + "p" + " ");
+                    } else {
+                        middleLine.append(EscapeSequences.SET_TEXT_COLOR_WHITE + "   ");
+                    }
+
+                    middleLine.append(EscapeSequences.RESET_BG_COLOR);
+                    middleLine.append(EscapeSequences.RESET_TEXT_COLOR);
+                }
+            }
+        }
+
+        middleLine.append(EscapeSequences.RESET_BG_COLOR);
+        middleLine.append(EscapeSequences.RESET_TEXT_COLOR);
+
+        return middleLine;
     }
 
 
