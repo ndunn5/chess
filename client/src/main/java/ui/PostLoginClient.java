@@ -45,6 +45,7 @@ public class PostLoginClient {
                 case "create" -> createGame(params);
                 case "list" -> listGames();
                 case "join" -> joinGame(params);
+                case "observe" -> observeGame(params);
                 default -> help();
             };
         } catch (ResponseException ex) {
@@ -99,7 +100,7 @@ public class PostLoginClient {
     public String listGames() throws ResponseException {
         try {
             ListGamesResult listGamesResult = server.handleListGames(new ListGamesRequest(PreLoginClient.getAuthToken()));
-            if (listGamesResult.games().isEmpty()){
+            if (listGamesResult.games().isEmpty()) {
                 return "No current games. Please Create a Game.";
             }
             String returnString = "";
@@ -107,11 +108,11 @@ public class PostLoginClient {
             for (Map<String, Object> game : listGamesResult.games()) {
                 String gameName = (String) game.get("gameName");
                 String whiteUser = (String) game.get("whiteUsername");
-                if (whiteUser == null){
+                if (whiteUser == null) {
                     whiteUser = "You can join as White";
                 }
                 String blackUser = (String) game.get("blackUsername");
-                if (blackUser == null){
+                if (blackUser == null) {
                     blackUser = "You can join as Black";
                 }
                 returnString += screenID + "\t" + gameName + "\n" +
@@ -128,14 +129,14 @@ public class PostLoginClient {
     }
 
     public String joinGame(String... params) throws ResponseException {
-        if (screenIDToGameDetails.isEmpty()){
+        if (screenIDToGameDetails.isEmpty()) {
             return "please list games first";
         }
         if (params.length == 2) {
             try {
                 int screenID = Integer.parseInt(params[0]);
                 Map<String, Object> gameDetails = screenIDToGameDetails.get(screenID);
-                if(gameDetails == null){
+                if (gameDetails == null) {
                     return "Invalid ID number";
                 }
                 Number gameIDObj = (Number) gameDetails.get("gameID");
@@ -154,5 +155,27 @@ public class PostLoginClient {
             }
         }
         throw new ResponseException(400, "Expected: <ID> <WHITE|BLACK>");
+    }
+
+    public String observeGame(String... params) throws ResponseException {
+        if (screenIDToGameDetails.isEmpty()) {
+            return "please list games first";
+        }
+        if (params.length == 1) {
+            int screenID = Integer.parseInt(params[0]);
+            Map<String, Object> gameDetails = screenIDToGameDetails.get(screenID);
+            if (gameDetails == null) {
+                return "Invalid ID number";
+            }
+            Number gameIDObj = (Number) gameDetails.get("gameID");
+            int gameID = gameIDObj.intValue();
+            String currentBoard = (String) gameDetails.get("game");
+
+            Repl.updateState(State.GAMEPLAY);
+
+            return gamePlay.showBoard(currentBoard, "WHITE");
+
+        }
+        throw new ResponseException(400, "Expected: <ID>");
     }
 }
