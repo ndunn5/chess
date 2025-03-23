@@ -52,22 +52,21 @@ public class GamePlay {
         JsonObject jsonObject = JsonParser.parseString(boardState).getAsJsonObject();
         JsonObject boardObject = jsonObject.getAsJsonObject("board");
         ChessBoard board = gson.fromJson(boardObject, ChessBoard.class);
-        if (whiteOrBlack.equals("WHITE")) {
-            return drawWhiteBoard(board, whiteOrBlack);
-        }
-
-        return boardState + whiteOrBlack;
+        return drawBoard(board, whiteOrBlack);
     }
 
-    public String drawWhiteBoard(ChessBoard board, String whiteOrBlack) {
+    public String drawBoard(ChessBoard board, String whiteOrBlack) {
         StringBuilder boardDisplay = new StringBuilder();
 
-        for(int row = 0; row < 10; row++){
+        for (int row = 0; row < 10; row++) {
             if (row == 0 || row == 9) {
                 boardDisplay.append(drawHeaderAndFooter(whiteOrBlack) + "\n");
-            }
-            else{
-                boardDisplay.append(drawMiddle(board, row, whiteOrBlack) + "\n");
+            } else {
+                if(whiteOrBlack.equals("WHITE")){
+                    boardDisplay.append(drawMiddle(board, 9-row, whiteOrBlack) + "\n");
+                }else{
+                    boardDisplay.append(drawMiddle(board, row, whiteOrBlack) + "\n");
+                }
             }
         }
 
@@ -78,9 +77,16 @@ public class GamePlay {
         StringBuilder headerAndFooterBuilder = new StringBuilder();
         headerAndFooterBuilder.append(EscapeSequences.SET_BG_COLOR_DARK_GREY);
 
-        for (String letter : sideLetters) {
-            headerAndFooterBuilder.append(EscapeSequences.SET_TEXT_COLOR_WHITE + " " + letter + " ");
+        if (color.equals("WHITE")) {
+            for (String letter : sideLetters) {
+                headerAndFooterBuilder.append(EscapeSequences.SET_TEXT_COLOR_WHITE + " " + letter + " ");
+            }
+        } else {
+            for (String letter : sideLetters.reversed()) {
+                headerAndFooterBuilder.append(EscapeSequences.SET_TEXT_COLOR_WHITE + " " + letter + " ");
+            }
         }
+
 
         headerAndFooterBuilder.append(EscapeSequences.RESET_BG_COLOR);
         headerAndFooterBuilder.append(EscapeSequences.RESET_TEXT_COLOR);
@@ -90,29 +96,35 @@ public class GamePlay {
 
     private StringBuilder drawMiddle(ChessBoard board, int row, String color) {
         StringBuilder middleLine = new StringBuilder();
-        for(int col = 0; col < 10; col++){
-            if(color.equals("WHITE")){
-                if(col == 0 || col == 9){
-                    middleLine.append(EscapeSequences.SET_BG_COLOR_DARK_GREY);
-                    middleLine.append(EscapeSequences.SET_TEXT_COLOR_WHITE + " " + sideNumbers.get(row) + " ");
-                }else{
-
-                    if ((row + col) % 2 == 0) {
+        for (int col = 0; col < 10; col++) {
+            if (col == 0 || col == 9) {
+                middleLine.append(EscapeSequences.SET_BG_COLOR_DARK_GREY);
+                middleLine.append(EscapeSequences.SET_TEXT_COLOR_WHITE + " " + sideNumbers.get(row) + " ");
+            } else {
+                if ((row + col) % 2 == 0) {
+                    if(color.equals("WHITE")){
                         middleLine.append(EscapeSequences.SET_BG_COLOR_WHITE);
-                    } else {
+                    }
+                    else{
                         middleLine.append(EscapeSequences.SET_BG_COLOR_DARK_GREEN);
                     }
-
-                    ChessPiece piece = board.getPiece(new ChessPosition(row, col));
-                    if (piece != null) {
-                        middleLine.append(getLetterPiece(piece));
-                    } else {
-                        middleLine.append(EscapeSequences.SET_TEXT_COLOR_WHITE + "   ");
+                } else {
+                    if(color.equals("WHITE")){
+                        middleLine.append(EscapeSequences.SET_BG_COLOR_DARK_GREEN);
+                    }else{
+                        middleLine.append(EscapeSequences.SET_BG_COLOR_WHITE);
                     }
-
-                    middleLine.append(EscapeSequences.RESET_BG_COLOR);
-                    middleLine.append(EscapeSequences.RESET_TEXT_COLOR);
                 }
+
+                ChessPiece piece = board.getPiece(new ChessPosition(row, col));
+                if (piece != null) {
+                    middleLine.append(getLetterPiece(piece));
+                } else {
+                    middleLine.append(EscapeSequences.SET_TEXT_COLOR_WHITE + "   ");
+                }
+
+                middleLine.append(EscapeSequences.RESET_BG_COLOR);
+                middleLine.append(EscapeSequences.RESET_TEXT_COLOR);
             }
         }
 
@@ -125,9 +137,9 @@ public class GamePlay {
     public StringBuilder getLetterPiece(ChessPiece piece) {
         StringBuilder pieceLetter = new StringBuilder();
         if (piece.getTeamColor() == ChessGame.TeamColor.WHITE) {
-            pieceLetter.append(EscapeSequences.SET_TEXT_COLOR_RED);
-        } else {
             pieceLetter.append(EscapeSequences.SET_TEXT_COLOR_BLUE);
+        } else {
+            pieceLetter.append(EscapeSequences.SET_TEXT_COLOR_RED);
         }
         switch (piece.getPieceType()) {
             case PAWN -> pieceLetter.append(" " + "P" + " ");

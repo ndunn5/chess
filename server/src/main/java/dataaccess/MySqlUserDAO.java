@@ -54,6 +54,7 @@ public class MySqlUserDAO implements UserDAO {
         String sql = "INSERT INTO users (username, password, email) VALUES (?, ?, ?)";
 
 
+
         try (Connection conn = DatabaseManager.getConnection();
              PreparedStatement preparedStatement = conn.prepareStatement(sql)) {
 
@@ -74,7 +75,7 @@ public class MySqlUserDAO implements UserDAO {
               `id` int NOT NULL AUTO_INCREMENT,
               `username` varchar(256) NOT NULL UNIQUE,
               `password` VARCHAR(512) NOT NULL,
-              `email` VARCHAR(256) NOT NULL UNIQUE,
+              `email` VARCHAR(256) NOT NULL,
               PRIMARY KEY (`id`),
               INDEX(username)
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci

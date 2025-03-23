@@ -88,7 +88,7 @@ public class PostLoginClient {
         if (params.length == 1) {
             try {
                 CreateGameResult createGameResult = server.handleCreateGame(new CreateGameRequest(PreLoginClient.getAuthToken(), params[0]));
-                return String.format("created game, %s", params[0]);
+                return String.format("created game: %s", params[0]);
             } catch (ResponseException e) {
                 throw new ResponseException(400, e.getMessage());
             }
@@ -96,9 +96,12 @@ public class PostLoginClient {
         throw new ResponseException(400, "Expected: <NAME>");
     }
 
-    public String listGames() throws ResponseException {//if its empty then lets print there arent any games
+    public String listGames() throws ResponseException {
         try {
             ListGamesResult listGamesResult = server.handleListGames(new ListGamesRequest(PreLoginClient.getAuthToken()));
+            if (listGamesResult.games().isEmpty()){
+                return "No current games. Please Create a Game.";
+            }
             String returnString = "";
             int screenID = 1;
             for (Map<String, Object> game : listGamesResult.games()) {
@@ -124,12 +127,17 @@ public class PostLoginClient {
         }
     }
 
-    public String joinGame(String... params) throws ResponseException { //if I havent listed them then handle that
-        //also have to handle if someone has already joined for that color?
+    public String joinGame(String... params) throws ResponseException {
+        if (screenIDToGameDetails.isEmpty()){
+            return "please list games first";
+        }
         if (params.length == 2) {
             try {
                 int screenID = Integer.parseInt(params[0]);
                 Map<String, Object> gameDetails = screenIDToGameDetails.get(screenID);
+                if(gameDetails == null){
+                    return "Invalid ID number";
+                }
                 Number gameIDObj = (Number) gameDetails.get("gameID");
                 int gameID = gameIDObj.intValue();
                 String currentBoard = (String) gameDetails.get("game");

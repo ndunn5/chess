@@ -89,7 +89,7 @@ public class PreLoginClient {
                 authToken = registerResult.authToken();
                 return String.format("You signed in as %s.", visitorName);
             } catch (ResponseException e){
-                throw new ResponseException(400, e.getMessage());
+                throw new ResponseException(400, "Username, Password, or Email already taken");
             }
         }
         throw new ResponseException(400, "Expected: <USERNAME> <PASSWORD> <EMAIL>");
