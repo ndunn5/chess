@@ -1,6 +1,7 @@
 package ui;
 
 import chess.ChessBoard;
+import chess.ChessGame;
 import chess.ChessPiece;
 import chess.ChessPosition;
 import com.google.gson.Gson;
@@ -104,7 +105,7 @@ public class GamePlay {
 
                     ChessPiece piece = board.getPiece(new ChessPosition(row, col));
                     if (piece != null) {
-                        middleLine.append(EscapeSequences.SET_TEXT_COLOR_BLACK + " " + "p" + " ");
+                        middleLine.append(getLetterPiece(piece));
                     } else {
                         middleLine.append(EscapeSequences.SET_TEXT_COLOR_WHITE + "   ");
                     }
@@ -119,6 +120,25 @@ public class GamePlay {
         middleLine.append(EscapeSequences.RESET_TEXT_COLOR);
 
         return middleLine;
+    }
+
+    public StringBuilder getLetterPiece(ChessPiece piece) {
+        StringBuilder pieceLetter = new StringBuilder();
+        if (piece.getTeamColor() == ChessGame.TeamColor.WHITE) {
+            pieceLetter.append(EscapeSequences.SET_TEXT_COLOR_RED);
+        } else {
+            pieceLetter.append(EscapeSequences.SET_TEXT_COLOR_BLUE);
+        }
+        switch (piece.getPieceType()) {
+            case PAWN -> pieceLetter.append(" " + "P" + " ");
+            case KING -> pieceLetter.append(" " + "K" + " ");
+            case QUEEN -> pieceLetter.append(" " + "Q" + " ");
+            case ROOK -> pieceLetter.append(" " + "R" + " ");
+            case BISHOP -> pieceLetter.append(" " + "B" + " ");
+            case KNIGHT -> pieceLetter.append(" " + "K" + " ");
+
+        }
+        return pieceLetter;
     }
 
 
