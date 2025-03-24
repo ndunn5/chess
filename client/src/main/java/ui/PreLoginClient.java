@@ -67,7 +67,7 @@ public class PreLoginClient {
                 Repl.updateState(State.SIGNEDIN);
                 visitorName = params[0];
                 authToken = loginResult.authToken();
-                return String.format("You signed in as %s.", visitorName);
+                return String.format("You signed in as %s. Type help for navigation.", visitorName);
             }
             catch (ResponseException e){
                 throw new ResponseException(400, e.getMessage());
