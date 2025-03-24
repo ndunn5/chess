@@ -103,20 +103,30 @@ public class GamePlay {
             } else {
                 if ((row + col) % 2 == 0) {
                     if(color.equals("WHITE")){
-                        middleLine.append(EscapeSequences.SET_BG_COLOR_WHITE);
+//                        middleLine.append(EscapeSequences.SET_BG_COLOR_WHITE);
+                        middleLine.append(EscapeSequences.SET_BG_COLOR_DARK_GREEN);
                     }
                     else{
-                        middleLine.append(EscapeSequences.SET_BG_COLOR_DARK_GREEN);
+                        middleLine.append(EscapeSequences.SET_BG_COLOR_WHITE);
+//                        middleLine.append(EscapeSequences.SET_BG_COLOR_DARK_GREEN);
                     }
                 } else {
                     if(color.equals("WHITE")){
-                        middleLine.append(EscapeSequences.SET_BG_COLOR_DARK_GREEN);
-                    }else{
+//                        middleLine.append(EscapeSequences.SET_BG_COLOR_DARK_GREEN);
                         middleLine.append(EscapeSequences.SET_BG_COLOR_WHITE);
+
+                    }else{
+//                        middleLine.append(EscapeSequences.SET_BG_COLOR_WHITE);
+                        middleLine.append(EscapeSequences.SET_BG_COLOR_DARK_GREEN);
                     }
                 }
+                ChessPiece piece = null;
+                if(color.equals("WHITE")){
+                    piece = board.getPiece(new ChessPosition(row, col));
+                }else{
+                    piece = board.getPiece(new ChessPosition(row, 9- col));
+                }
 
-                ChessPiece piece = board.getPiece(new ChessPosition(row, col));
                 if (piece != null) {
                     middleLine.append(getLetterPiece(piece));
                 } else {
