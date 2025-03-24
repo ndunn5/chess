@@ -76,7 +76,11 @@ public class ServerFacade {
     public CreateGameResult handleCreateGame(CreateGameRequest createGameRequest) throws ResponseException {
         var path = "/game";
         try{
-            CreateGameResult createGameResult = this.makeRequest("POST", path, createGameRequest, CreateGameResult.class, createGameRequest.authToken());
+            CreateGameResult createGameResult = this.makeRequest("POST",
+                    path,
+                    createGameRequest,
+                    CreateGameResult.class,
+                    createGameRequest.authToken());
             return createGameResult;
         } catch (ResponseException e) {
             throw new ResponseException(400, e.getMessage());

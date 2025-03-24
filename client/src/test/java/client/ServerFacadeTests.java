@@ -63,7 +63,10 @@ public class ServerFacadeTests {
         try{
             RegisterResult registerResult = facade.handleRegister(new RegisterRequest("testUserName", "testPassword", "testEmail"));
             facade.handleLogout(new LogoutRequest(registerResult.authToken()));
-            Assertions.assertThrows(ResponseException.class, () -> facade.handleRegister(new RegisterRequest("testUserName", "testPassword", "testEmail")));
+            Assertions.assertThrows(ResponseException.class,
+                    () -> facade.handleRegister(new RegisterRequest("testUserName",
+                            "testPassword",
+                            "testEmail")));
         }catch(ResponseException e){
             throw new RuntimeException(e);
         }

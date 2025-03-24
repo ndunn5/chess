@@ -9,12 +9,7 @@ public class Main {
         if (args.length == 1) {
             serverUrl = args[0];
         }
-//        try {
-//            ServerFacade serverFacade = new ServerFacade(serverUrl);
-//            serverFacade.handleClearDatabase();
-//        } catch (ResponseException ex){
-//            System.out.println("An error occurred while clearing the database: " + ex.getMessage());
-//        }
+
 
         new Repl(serverUrl).run();
     }
