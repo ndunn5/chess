@@ -10,6 +10,7 @@ import model.LogoutRequest;
 import model.LogoutResult;
 import server.ServerFacade;
 import chess.ChessGame;
+import chess.ChessBoard;
 
 import java.util.*;
 
@@ -59,22 +60,27 @@ public class GamePlay {
         Gson gson = new Gson();
         JsonObject jsonObject = JsonParser.parseString(boardState).getAsJsonObject();
         JsonObject boardObject = jsonObject.getAsJsonObject("board");
-//        ChessBoard board = gson.fromJson(boardObject, ChessBoard.class);
         this.currentBoard = gson.fromJson(boardObject, ChessBoard.class);
-        return drawBoard(currentBoard, whiteOrBlack);
+        return drawBoard(currentBoard, whiteOrBlack, null);
     }
 
-    public String drawBoard(ChessBoard board, String whiteOrBlack) {
+    public String drawBoard(ChessBoard board, String whiteOrBlack, Collection<ChessMove> validMoves) {
         StringBuilder boardDisplay = new StringBuilder();
+        Collection<ChessPosition> justChessEndPositions = new ArrayList<>();
+        if (validMoves != null){
+            for(ChessMove validMove: validMoves){
+                justChessEndPositions.add(validMove.getEndPosition());
+            }
+        }
 
         for (int row = 0; row < 10; row++) {
             if (row == 0 || row == 9) {
                 boardDisplay.append(drawHeaderAndFooter(whiteOrBlack) + "\n");
             } else {
                 if(whiteOrBlack.equals("WHITE")){
-                    boardDisplay.append(drawMiddle(board, 9-row, whiteOrBlack) + "\n");
+                    boardDisplay.append(drawMiddle(board, 9-row, whiteOrBlack, justChessEndPositions) + "\n");
                 }else{
-                    boardDisplay.append(drawMiddle(board, row, whiteOrBlack) + "\n");
+                    boardDisplay.append(drawMiddle(board, row, whiteOrBlack, justChessEndPositions) + "\n");
                 }
             }
         }
@@ -103,29 +109,36 @@ public class GamePlay {
         return headerAndFooterBuilder;
     }
 
-    private StringBuilder drawMiddle(ChessBoard board, int row, String color) {
+    private StringBuilder drawMiddle(ChessBoard board, int row, String color, Collection<ChessPosition> endPositions) {
         StringBuilder middleLine = new StringBuilder();
+        boolean highlight = false;
         for (int col = 0; col < 10; col++) {
+            ChessPosition currentPosition;
+            if (color.equals("WHITE")){
+                currentPosition = new ChessPosition(row, col);
+            } else{
+                currentPosition = new ChessPosition(row, 9- col);
+            }
+            highlight = endPositions.contains(currentPosition);
             if (col == 0 || col == 9) {
                 middleLine.append(EscapeSequences.SET_BG_COLOR_DARK_GREY);
                 middleLine.append(EscapeSequences.SET_TEXT_COLOR_WHITE + " " + sideNumbers.get(row) + " ");
             } else {
-                if ((row + col) % 2 == 0) {
+                if(highlight){
+                    middleLine.append(EscapeSequences.SET_BG_COLOR_YELLOW);
+                }
+                else if ((row + col) % 2 == 0) {
                     if(color.equals("WHITE")){
-//                        middleLine.append(EscapeSequences.SET_BG_COLOR_WHITE);
                         middleLine.append(EscapeSequences.SET_BG_COLOR_DARK_GREEN);
                     }
                     else{
                         middleLine.append(EscapeSequences.SET_BG_COLOR_WHITE);
-//                        middleLine.append(EscapeSequences.SET_BG_COLOR_DARK_GREEN);
                     }
                 } else {
                     if(color.equals("WHITE")){
-//                        middleLine.append(EscapeSequences.SET_BG_COLOR_DARK_GREEN);
                         middleLine.append(EscapeSequences.SET_BG_COLOR_WHITE);
 
                     }else{
-//                        middleLine.append(EscapeSequences.SET_BG_COLOR_WHITE);
                         middleLine.append(EscapeSequences.SET_BG_COLOR_DARK_GREEN);
                     }
                 }
@@ -185,18 +198,31 @@ public class GamePlay {
     }
 
     public String redraw(){
-        return drawBoard(currentBoard, clientColor);
+        return drawBoard(currentBoard, clientColor, null);
     }
 
-    public String highlight(String... params){
-//        ChessPosition pos
-//        return chessGame.validMoves(position);
-        String letterAndNumber = params[0];
-        if (checkValidLetterAndNumber(letterAndNumber)){
-            return letterAndNumber;
-        }else{
-            return "invalid letter and number. Type letter first and then number";
+    public String highlight(String... params) throws ResponseException{
+        if(params.length == 1){
+            String letterAndNumber = params[0];
+            if (checkValidLetterAndNumber(letterAndNumber)){
+                int row = Character.getNumericValue(letterAndNumber.charAt(1));
+                int col = sideLetters.indexOf(String.valueOf(letterAndNumber.charAt(0)));
+                ChessPosition chessPosition = new ChessPosition(row, col);
+                ChessPiece chessPiece = currentBoard.getPiece(chessPosition);
+                if (chessPiece == null){
+                    throw new ResponseException(400, "there is no piece there");
+                }
+                Collection<ChessMove> validMoves = chessGame.validMoves(chessPosition);
+                if (validMoves.isEmpty()){
+                    return "no valid moves";
+                }
+                return drawBoard(currentBoard, clientColor, validMoves);
+//                return letterAndNumber;
+            }else{
+                return "invalid letter and number. Type letter(a-h) first and then number (1-8)";
+            }
         }
+        throw new ResponseException(400, "Expected: <letter(a-h) number (1-8)>");
     }
 
     private boolean checkValidLetterAndNumber(String letterAndNumber){
