@@ -1,9 +1,6 @@
 package ui;
 
-import chess.ChessBoard;
-import chess.ChessGame;
-import chess.ChessPiece;
-import chess.ChessPosition;
+import chess.*;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
@@ -12,11 +9,9 @@ import exception.ResponseException;
 import model.LogoutRequest;
 import model.LogoutResult;
 import server.ServerFacade;
+import chess.ChessGame;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 public class GamePlay {
     //start with server side stuff(make a separate class that can also access the DAOs)-> make sure its working in the webiste-> test cases  -> go to the client side things
@@ -35,6 +30,7 @@ public class GamePlay {
     private final ArrayList<String> sideNumbers = new ArrayList<>(Arrays.asList(" ", "1", "2", "3", "4", "5", "6", "7", "8", " "));
     private ChessBoard currentBoard = new ChessBoard();
     private String clientColor = "WHITE";
+    private ChessGame chessGame = new ChessGame();
 
 
     public GamePlay(String serverUrl) {
@@ -50,6 +46,7 @@ public class GamePlay {
             return switch (cmd) {
                 case ("logout") -> logout();
                 case ("redraw") -> redraw();
+                case ("highlight") -> highlight(params);
                 default -> help();
             };
         } catch (ResponseException ex) {
@@ -169,7 +166,7 @@ public class GamePlay {
             case QUEEN -> pieceLetter.append(" " + "Q" + " ");
             case ROOK -> pieceLetter.append(" " + "R" + " ");
             case BISHOP -> pieceLetter.append(" " + "B" + " ");
-            case KNIGHT -> pieceLetter.append(" " + "K" + " ");
+            case KNIGHT -> pieceLetter.append(" " + "N" + " ");
 
         }
         return pieceLetter;
@@ -190,6 +187,35 @@ public class GamePlay {
     public String redraw(){
         return drawBoard(currentBoard, clientColor);
     }
+
+    public String highlight(String... params){
+//        ChessPosition pos
+//        return chessGame.validMoves(position);
+        String letterAndNumber = params[0];
+        if (checkValidLetterAndNumber(letterAndNumber)){
+            return letterAndNumber;
+        }else{
+            return "invalid letter and number. Type letter first and then number";
+        }
+    }
+
+    private boolean checkValidLetterAndNumber(String letterAndNumber){
+        List<String> justLetters = sideLetters.subList(1, sideLetters.size());
+        List<String> justNumbers = sideNumbers.subList(1, sideNumbers.size());
+
+
+        if (letterAndNumber.length() == 2) {
+            String letter = String.valueOf(letterAndNumber.charAt(0));
+            String number = String.valueOf(letterAndNumber.charAt(1));
+            if (justLetters.contains(letter) && justNumbers.contains(number)) {
+                return true;
+            } else{
+                return false;
+            }
+        }else{
+            return false;
+        }
+}
 
     public String logout() throws ResponseException {
         try {
