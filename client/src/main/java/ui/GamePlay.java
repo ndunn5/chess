@@ -19,6 +19,16 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class GamePlay {
+    //start with server side stuff(make a separate class that can also access the DAOs)-> make sure its working in the webiste-> test cases  -> go to the client side things
+    //be careful with copying and pasting from petshop
+    //think through how someone can break things
+    //an observer tries to make move or resign
+    //wrong color makes move for the other color
+    //instruction page just on websockets
+    //can use any color for highlight
+    //do something for pawn promotion
+    //show what move is being made and name of player
+    //reread spek, websocket notifations
 
     private final ServerFacade server;
     private final String serverUrl;
@@ -166,12 +176,11 @@ public class GamePlay {
 
     public String help() {
         return """
-                - create <NAME> - a game
-                - list - games 
-                - join <ID> [WHITE|BLACK] - a game
-                - observe <ID> - a game
-                - logout - when you are done
-                - quit - playing chess
+                - redraw - chess board
+                - leave - current game 
+                - make move - to win
+                - resign - a game
+                - highlight - legal moves
                 - help - with possible commands
                 """;
     }
