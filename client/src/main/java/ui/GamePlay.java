@@ -29,11 +29,12 @@ public class GamePlay {
     //do something for pawn promotion
     //show what move is being made and name of player
     //reread spek, websocket notifations
-
     private final ServerFacade server;
     private final String serverUrl;
     private final ArrayList<String> sideLetters = new ArrayList<>(Arrays.asList(" ", "a", "b", "c", "d", "e", "f", "g", "h", " "));
     private final ArrayList<String> sideNumbers = new ArrayList<>(Arrays.asList(" ", "1", "2", "3", "4", "5", "6", "7", "8", " "));
+    private ChessBoard currentBoard = new ChessBoard();
+    private String clientColor = "WHITE";
 
 
     public GamePlay(String serverUrl) {
@@ -48,6 +49,7 @@ public class GamePlay {
             var params = Arrays.copyOfRange(tokens, 1, tokens.length);
             return switch (cmd) {
                 case ("logout") -> logout();
+                case ("redraw") -> redraw();
                 default -> help();
             };
         } catch (ResponseException ex) {
@@ -56,13 +58,13 @@ public class GamePlay {
     }
 
     public String showBoard(String boardState, String whiteOrBlack) {
-//        "This is where the board will be printed. It needs to take in an object in and also white orientation or black orientation";
+        this.clientColor = whiteOrBlack;
         Gson gson = new Gson();
-
         JsonObject jsonObject = JsonParser.parseString(boardState).getAsJsonObject();
         JsonObject boardObject = jsonObject.getAsJsonObject("board");
-        ChessBoard board = gson.fromJson(boardObject, ChessBoard.class);
-        return drawBoard(board, whiteOrBlack);
+//        ChessBoard board = gson.fromJson(boardObject, ChessBoard.class);
+        this.currentBoard = gson.fromJson(boardObject, ChessBoard.class);
+        return drawBoard(currentBoard, whiteOrBlack);
     }
 
     public String drawBoard(ChessBoard board, String whiteOrBlack) {
@@ -183,6 +185,10 @@ public class GamePlay {
                 - highlight - legal moves
                 - help - with possible commands
                 """;
+    }
+
+    public String redraw(){
+        return drawBoard(currentBoard, clientColor);
     }
 
     public String logout() throws ResponseException {

@@ -20,10 +20,10 @@ public class PostLoginClient {
     private Map<Integer, Map<String, Object>> screenIDToGameDetails = new HashMap<>();
     private GamePlay gamePlay;
 
-    public PostLoginClient(String serverUrl) {
+    public PostLoginClient(String serverUrl, GamePlay gamePlay) {
         server = new ServerFacade(serverUrl);
         this.serverUrl = serverUrl;
-        gamePlay = new GamePlay(serverUrl);
+        this.gamePlay = gamePlay;
     }
 
     private String checkSignedIn() {
