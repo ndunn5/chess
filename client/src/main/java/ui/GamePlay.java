@@ -68,8 +68,12 @@ public class GamePlay {
         StringBuilder boardDisplay = new StringBuilder();
         Collection<ChessPosition> justChessEndPositions = new ArrayList<>();
         if (validMoves != null){
+            Iterator<ChessMove> iterator = validMoves.iterator();
             for(ChessMove validMove: validMoves){
                 justChessEndPositions.add(validMove.getEndPosition());
+                if(!justChessEndPositions.contains(validMove.getStartPosition())){
+                    justChessEndPositions.add(validMove.getStartPosition());
+                }
             }
         }
 
