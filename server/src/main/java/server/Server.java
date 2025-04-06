@@ -7,6 +7,7 @@ import extramodel.JoinGameRequest;
 import service.*;
 import spark.*;
 import static spark.Spark.*;
+import server.websocket.WebSocketHandler;
 
 import com.google.gson.Gson;
 
@@ -19,13 +20,14 @@ public class Server {
     private final ListGameService listGameService;
     private final CreateGameService createGameService;
     private final JoinGameService joinGameService;
+    private final WebSocketHandler webSocketHandler;
 
     public Server() {
         try {
             UserDAO userDAO = new MySqlUserDAO();
             AuthDAO authDAO = new MySqlAuthDAO();
             GameDAO gameDAO = new MySqlGameDAO();
-
+            webSocketHandler = new WebSocketHandler(userDAO, authDAO, gameDAO);
 
             this.clearService = new ClearService(userDAO, gameDAO, authDAO);
             this.registerService = new RegisterService(userDAO, authDAO);
@@ -43,6 +45,10 @@ public class Server {
     public int run(int desiredPort) {
         port(desiredPort);
         staticFiles.location("web");
+
+        //added
+        Spark.webSocket("/ws", webSocketHandler);
+        //this
 
         delete("/db", (request, response) -> handleClearDatabase(response));
         post("/user", (request, response) -> handleRegister(request, response));

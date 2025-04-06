@@ -8,6 +8,11 @@ import exception.ResponseException;
 import extramodel.JoinGameRequest;
 import model.*;
 import server.ServerFacade;
+import ui.websocket.NotificationHandler;
+import ui.websocket.WebSocketFacade;
+import websocket.messages.LoadGameMessage;
+import websocket.messages.NotificationMessage;
+import websocket.messages.ServerMessage;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -149,6 +154,10 @@ public class PostLoginClient {
                 JoinGameResult joinGameResult = server.handleJoinGame(joinGameRequest);
                 Repl.updateState(State.GAMEPLAY);
 
+                openWebSocketConnection(gameID, params[1]);
+
+
+
                 return gamePlay.showBoard(currentBoard, params[1]);
             } catch (ResponseException e) {
                 throw new ResponseException(400, e.getMessage());
@@ -156,6 +165,33 @@ public class PostLoginClient {
         }
         throw new ResponseException(400, "Expected: <ID> <WHITE|BLACK>");
     }
+
+
+    private void openWebSocketConnection(int gameID, String playerColor) throws ResponseException {
+        try {
+            WebSocketFacade webSocketFacade = new WebSocketFacade(serverUrl, new NotificationHandler() {
+                public void notify(ServerMessage serverMessage) {
+                    switch(serverMessage.getServerMessageType()){
+                        case LOAD_GAME:
+                            LoadGameMessage loadGameMessage = (LoadGameMessage) serverMessage;
+                            gamePlay.drawBoard(loadGameMessage.getGameData().game().getBoard(), playerColor, null);
+                            break;
+                        case NOTIFICATION :
+                            NotificationMessage notificationMessage = (NotificationMessage) serverMessage;
+                            //somehow gotta display the message here
+                            System.out.println(notificationMessage.getNotificationMessage());
+                        default:
+                            throw new RuntimeException("Unexpected server message type");
+                    }
+                }
+            });
+        } catch (Exception e) {
+            throw new ResponseException(500, "Failed to establish WebSocket connection: " + e.getMessage());
+        }
+    }
+
+
+
 
     public String observeGame(String... params) throws ResponseException {
         if (screenIDToGameDetails.isEmpty()) {
