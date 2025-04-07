@@ -20,6 +20,7 @@ public class ChessGame {
 
     private ChessBoard board;
     private TeamColor currentTurn;
+    private boolean isGameOver = false;
 
     public ChessGame() {
         this.board = new ChessBoard();
@@ -237,6 +238,15 @@ public class ChessGame {
 //        throw new RuntimeException("Not implemented");
         return board;
     }
+
+    public void setGameOver(boolean gameOver) {
+        isGameOver = gameOver;
+    }
+
+    public boolean isGameOver() {
+        return isGameOver;
+    }
+
     //constuctor -> getters and setters -> isincheck -> validMoves -> makeMove -> all the checks
 //    override .clone
 

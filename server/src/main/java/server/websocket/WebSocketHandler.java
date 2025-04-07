@@ -28,6 +28,7 @@ import spark.Response;
 import dataaccess.*;
 import websocket.commands.ConnectMessage;
 import websocket.commands.MakeMoveMessage;
+import websocket.commands.ResignMessage;
 import websocket.commands.UserGameCommand;
 import websocket.messages.ErrorMessage;
 import websocket.messages.LoadGameMessage;
@@ -80,6 +81,7 @@ public class WebSocketHandler {
         switch (userGameCommand.getCommandType()) {
             case CONNECT -> connect(new Gson().fromJson(message, ConnectMessage.class));
             case MAKE_MOVE -> makeMove(new Gson().fromJson(message, MakeMoveMessage.class));
+            case RESIGN -> resign(new Gson().fromJson(message, ResignMessage.class));
         }
     }
 
@@ -180,6 +182,34 @@ public class WebSocketHandler {
         } catch (DataAccessException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public void resign(ResignMessage resignMessage){
+        int gameID = resignMessage.getGameID();
+        String playerName;
+        GameData gameData;
+        try{
+            playerName = authDAO.getAuthDataWithAuthToken(resignMessage.getAuthToken()).username();
+        } catch (DataAccessException e) {
+            throw new RuntimeException(e);
+        }
+        Set<Connection> relevantConnections = connections.getSessionForGameID(gameID);
+        Connection thisConnection = getCorrectConnection(relevantConnections, playerName);
+        try{
+            gameData = gameDAO.getGame(gameID);
+        } catch (DataAccessException e) {
+            throw new RuntimeException(e);
+        }
+        ChessGame chessGame = gameData.game();
+        chessGame.setGameOver(true);
+        try{
+            gameDAO.updateGame(gameData);
+        } catch (DataAccessException e) {
+            throw new RuntimeException(e);
+        }
+        String message = playerName + " resigned" ;
+        NotificationMessage notificationMessage = new NotificationMessage(message);
+        broadcastMessage(gameID, notificationMessage, null);
     }
 
     public boolean checkCorrectColorMove(ChessBoard board, ChessMove move, String currentTurn){
