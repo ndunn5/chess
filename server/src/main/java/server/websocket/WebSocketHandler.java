@@ -1,5 +1,9 @@
 package server.websocket;
 
+import chess.ChessBoard;
+import chess.ChessGame;
+import chess.ChessMove;
+import chess.InvalidMoveException;
 import com.mysql.cj.protocol.Message;
 import com.mysql.cj.x.protobuf.Mysqlx;
 import extramodel.JoinGameRequest;
@@ -11,16 +15,19 @@ import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
 import org.eclipse.jetty.websocket.api.annotations.WebSocket;
 
 import com.google.gson.Gson;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Set;
 import java.util.Timer;
+
 import org.eclipse.jetty.websocket.api.Session;
 import spark.Request;
 import spark.Response;
 import dataaccess.*;
 import websocket.commands.ConnectMessage;
+import websocket.commands.MakeMoveMessage;
 import websocket.commands.UserGameCommand;
 import websocket.messages.ErrorMessage;
 import websocket.messages.LoadGameMessage;
@@ -29,8 +36,8 @@ import websocket.messages.ServerMessage;
 
 //@onWebSocketError onError(throwable: Throwable): void
 //@OnWebScoketMessage onMessage(session: Session, str: string): void
-        //1.determing the message type
-        //2. call one of the following methods to process te message
+//1.determing the message type
+//2. call one of the following methods to process te message
 
 
 //look at petshop. pretty good example
@@ -58,8 +65,9 @@ public class WebSocketHandler {
         this.authDAO = authDAO;
         this.gameDAO = gameDAO;
     }
+
     @OnWebSocketError
-    public void onError(Throwable throwable){
+    public void onError(Throwable throwable) {
         System.err.println("WebSocket Error: " + throwable.getMessage());
         throwable.printStackTrace();
     }
@@ -71,41 +79,40 @@ public class WebSocketHandler {
         UserGameCommand userGameCommand = new Gson().fromJson(message, UserGameCommand.class);
         switch (userGameCommand.getCommandType()) {
             case CONNECT -> connect(new Gson().fromJson(message, ConnectMessage.class));
+            case MAKE_MOVE -> makeMove(new Gson().fromJson(message, MakeMoveMessage.class));
         }
     }
 
-
-    //A user connected to the game as a player (black or white). The notification message should
-    // include the player’s name and which side they are playing (black or white).
-    private void connect(ConnectMessage connectMessage){
+    private void connect(ConnectMessage connectMessage) {
         String authToken = connectMessage.getAuthToken();
         int gameID = connectMessage.getGameID();
         String playerColor = null;
-        try{
+        try {
             AuthData authData = authDAO.getAuthDataWithAuthToken(authToken);
-            if (authData == null){
+            if (authData == null) {
                 Connection errorConnection = new Connection(null, 0, null, session);
                 errorConnection.sendMessage(new ErrorMessage("invalid authToken"));
                 return;
-            }//send load game message just to the user
+            }
             String playerName = authData.username();
             GameData gameData = gameDAO.getGame(gameID);
-            if (gameData == null){
+            if (gameData == null) {
                 Connection errorConnection = new Connection(null, 0, null, session);
                 errorConnection.sendMessage(new ErrorMessage("invalid gamID"));
                 return;
             }
             if (gameData.whiteUsername().equals(playerName)){
                 playerColor = "WHITE";
-            }else if(gameData.blackUsername().equals(playerName)){
+            } else if (gameData.blackUsername().equals(playerName)){
                 playerColor = "BLACK";
             }
             //get the game data, check if username is white, balck, or neither then observer
             Connection thisConnection = new Connection(playerName, gameID, authToken, session);
             connections.addSessionToGame(gameID, thisConnection);
             String message = playerName + " has joined as " + playerColor + ".";
-
-
+            if (playerColor == null) {
+                message = playerName + " has joined as an observer.";
+            }
             LoadGameMessage loadGameMessage = new LoadGameMessage(gameData);
             thisConnection.sendMessage(loadGameMessage);
 
@@ -119,26 +126,95 @@ public class WebSocketHandler {
         }
     }
 
+    private static ChessGame.TeamColor getCurrentColor(GameData gameData, String playerName, ChessGame.TeamColor playerColor) {
+
+        if (gameData.whiteUsername().equals(playerName)) {
+            playerColor = ChessGame.TeamColor.WHITE;
+        } else if (gameData.blackUsername().equals(playerName)) {
+            playerColor = ChessGame.TeamColor.BLACK;
+        }
+        return playerColor;
+    }
+
+    public void makeMove(MakeMoveMessage makeMoveMessage) {
+        ChessMove chessMove = makeMoveMessage.getChessMove();
+        int gameID = makeMoveMessage.getGameID();
+        AuthData authData;
+        ChessBoard board = null;
+        ChessGame.TeamColor currentColor = null;
+        try {
+            authData = authDAO.getAuthDataWithAuthToken(makeMoveMessage.getAuthToken());
+        } catch (DataAccessException e) {
+            throw new RuntimeException(e);
+        }
+        String playerName = authData.username();
+        try {
+            GameData gameData = gameDAO.getGame(makeMoveMessage.getGameID());
+            ChessGame chessGame = gameData.game();
+            board = gameData.game().getBoard();
+            currentColor = getCurrentColor(gameData, playerName, currentColor);
+            try {
+                if (!chessGame.validMoves((chessMove.getStartPosition())).contains(chessMove) || !chessGame.getTeamTurn().equals(currentColor)) {
+                    Connection errorConnection = new Connection(null, 0, null, session);
+                    errorConnection.sendMessage(new ErrorMessage("invalid move"));
+                    return;
+                }
+                chessGame.makeMove(makeMoveMessage.getChessMove());
+                gameDAO.updateGame(gameData); //gameData may not be updated we will see
+
+                LoadGameMessage loadGameMessage = new LoadGameMessage(gameData);
+                broadcastMessage(gameID, loadGameMessage, null);
+
+                String message = playerName + " made this chessmove :" + chessMove.toString();
+                NotificationMessage notificationMessage = new NotificationMessage(message);
+                Connection thisConnection  = getCorrectConnection(connections.getSessionForGameID(gameID), playerName);
+                broadcastMessage(gameID, notificationMessage, thisConnection);
+            } catch (InvalidMoveException e) {
+                throw new RuntimeException(e);
+            }
+        } catch (DataAccessException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public boolean checkCorrectColorMove(ChessBoard board, ChessMove move, String currentTurn){
+        if (board.getPiece(move.getStartPosition()).getTeamColor().equals(currentTurn)){
+            return true;
+        }else{
+            return false;
+        }
+    }
+
+    public Connection getCorrectConnection(Set<Connection> relevantConnections, String playerName){
+        for (Connection c : relevantConnections){
+            if(c.playerName.equals(playerName)){
+                return c;
+            }
+        }
+        return null;
+    }
 
 
-    public void broadcastMessage(int gameID,  ServerMessage message, Connection ExceptThisConnection) {//use a connection object and compare using the username rather than the session
+    public void broadcastMessage(int gameID, ServerMessage message, Connection ExceptThisConnection) {//use a connection object and compare using the username rather than the session
         var removeList = new ArrayList<Connection>();
         Set<Connection> relevantConnections = connections.getSessionForGameID(gameID);
-        if (relevantConnections == null){
-            Connection errorConnnection = new Connection(null, 0 , null, null);
+        if (relevantConnections == null) {
+            Connection errorConnnection = new Connection(null, 0, null, null);
             errorConnnection.sendMessage(new ErrorMessage("invalid gameID"));
             return;
         }
         for (Connection c : relevantConnections) {
             if (c.session.isOpen()) {
-                if (ExceptThisConnection.playerName != c.playerName) {
+                if (ExceptThisConnection == null){
+                    c.sendMessage(message);
+                } else if (ExceptThisConnection.playerName != c.playerName) {
                     c.sendMessage(message);
                 }
-            }else {
+            } else {
                 removeList.add(c);
             }
         }
-        for (var c: removeList){
+        for (var c : removeList) {
             connections.removeSessionFromGame(gameID, c);
         }
     }
