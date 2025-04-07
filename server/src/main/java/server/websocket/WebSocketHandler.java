@@ -128,14 +128,15 @@ public class WebSocketHandler {
         }
     }
 
-    private static ChessGame.TeamColor getCurrentColor(GameData gameData, String playerName, ChessGame.TeamColor playerColor) {
+    private static ChessGame.TeamColor getCurrentColor(GameData gameData, String playerName) {
 
         if (gameData.whiteUsername().equals(playerName)) {
-            playerColor = ChessGame.TeamColor.WHITE;
+            return ChessGame.TeamColor.WHITE;
         } else if (gameData.blackUsername().equals(playerName)) {
-            playerColor = ChessGame.TeamColor.BLACK;
+            return ChessGame.TeamColor.BLACK;
+        }else{
+            return null;
         }
-        return playerColor;
     }
 
     public void makeMove(MakeMoveMessage makeMoveMessage) {
@@ -159,7 +160,7 @@ public class WebSocketHandler {
             GameData gameData = gameDAO.getGame(makeMoveMessage.getGameID());
             ChessGame chessGame = gameData.game();
             board = gameData.game().getBoard();
-            currentColor = getCurrentColor(gameData, playerName, currentColor);
+            currentColor = getCurrentColor(gameData, playerName);
             try {
                 if (!chessGame.validMoves((chessMove.getStartPosition())).contains(chessMove) || !chessGame.getTeamTurn().equals(currentColor) || chessGame.isGameOver()) {
                     Connection errorConnection = new Connection(null, 0, null, session);
@@ -188,6 +189,7 @@ public class WebSocketHandler {
         int gameID = resignMessage.getGameID();
         String playerName;
         GameData gameData;
+        ChessGame.TeamColor teamColor;
         try{
             playerName = authDAO.getAuthDataWithAuthToken(resignMessage.getAuthToken()).username();
         } catch (DataAccessException e) {
@@ -207,17 +209,17 @@ public class WebSocketHandler {
         } catch (DataAccessException e) {
             throw new RuntimeException(e);
         }
+        teamColor = getCurrentColor(gameData, playerName);
+        if (teamColor == null){
+            Connection errorConnection = new Connection(null, 0, null, session);
+            errorConnection.sendMessage(new ErrorMessage("observers can't resign"));
+            return;
+        }
         String message = playerName + " resigned" ;
         NotificationMessage notificationMessage = new NotificationMessage(message);
         broadcastMessage(gameID, notificationMessage, null);
-    }
 
-    public boolean checkCorrectColorMove(ChessBoard board, ChessMove move, String currentTurn){
-        if (board.getPiece(move.getStartPosition()).getTeamColor().equals(currentTurn)){
-            return true;
-        }else{
-            return false;
-        }
+
     }
 
     public Connection getCorrectConnection(Set<Connection> relevantConnections, String playerName){
