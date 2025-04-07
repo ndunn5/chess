@@ -1,7 +1,9 @@
 package server.websocket;
 
 import com.mysql.cj.protocol.Message;
+import com.mysql.cj.x.protobuf.Mysqlx;
 import extramodel.JoinGameRequest;
+import model.AuthData;
 import model.GameData;
 import model.JoinGameResult;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketError;
@@ -20,6 +22,9 @@ import spark.Response;
 import dataaccess.*;
 import websocket.commands.ConnectMessage;
 import websocket.commands.UserGameCommand;
+import websocket.messages.ErrorMessage;
+import websocket.messages.LoadGameMessage;
+import websocket.messages.NotificationMessage;
 import websocket.messages.ServerMessage;
 
 //@onWebSocketError onError(throwable: Throwable): void
@@ -62,6 +67,7 @@ public class WebSocketHandler {
     @OnWebSocketMessage
     public void onMessage(Session session, String message) throws IOException {
         this.session = session;
+
         UserGameCommand userGameCommand = new Gson().fromJson(message, UserGameCommand.class);
         switch (userGameCommand.getCommandType()) {
             case CONNECT -> connect(new Gson().fromJson(message, ConnectMessage.class));
@@ -72,37 +78,63 @@ public class WebSocketHandler {
     //A user connected to the game as a player (black or white). The notification message should
     // include the player’s name and which side they are playing (black or white).
     private void connect(ConnectMessage connectMessage){
+        String authToken = connectMessage.getAuthToken();
         int gameID = connectMessage.getGameID();
-        String playerName = connectMessage.getUsername();
-        String playerColor = connectMessage.getColor();
+        String playerColor = null;
+        try{
+            AuthData authData = authDAO.getAuthDataWithAuthToken(authToken);
+            if (authData == null){
+                Connection errorConnection = new Connection(null, 0, null, session);
+                broadcastMessage(gameID, new ErrorMessage("invalid authToken"), errorConnection);
+                return;
+            }//send load game message just to the user
+            String playerName = authData.username();
+            GameData gameData = gameDAO.getGame(gameID);
+            if (gameData.whiteUsername().equals(playerName)){
+                playerColor = "WHITE";
+            }else if(gameData.blackUsername().equals(playerName)){
+                playerColor = "BLACK";
+            }
+            //get the game data, check if username is white, balck, or neither then observer
+            Connection thisConnection = new Connection(playerName, gameID, authToken, session);
+            connections.addSessionToGame(gameID, thisConnection);
+            String message = playerName + " has joined as " + playerColor + ".";
 
-        connections.addSessionToGame(gameID, session);
-        String msg = playerName + " has joined as " + playerColor + ".";
-        ServerMessage serverMessage = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION);
-        broadcastMessage(gameID, serverMessage, session);
+
+            LoadGameMessage loadGameMessage = new LoadGameMessage(gameData);
+            thisConnection.sendMessage(loadGameMessage);
+
+
+            NotificationMessage notificationMessage = new NotificationMessage(message);
+            broadcastMessage(gameID, notificationMessage, thisConnection);
+
+
+        } catch (DataAccessException e) {
+            throw new RuntimeException(e);
+        }
     }
 
-    public void broadcastMessage(int gameID,  ServerMessage serverMessage, Session exceptThisSession){
-        var removeMap = new HashMap<Integer, Session>();
-        for (int currentGameID: connections.connections.keySet()){
-            Set<Session> sessions = connections.getSessionForGameID(currentGameID);
-            for (Session s: sessions){
-                if(s.isOpen()){
-                    if (gameID != currentGameID && exceptThisSession != s){
-                        try{
-                            s.getRemote().sendString(serverMessage.toString());
-                        } catch (IOException e) {
-                            throw new RuntimeException(e);
-                        }
-                    }
-                } else{
-                    removeMap.put(currentGameID, s);
-                }
 
+
+    public void broadcastMessage(int gameID,  ServerMessage message, Connection ExceptThisConnection) {//use a connection object and compare using the username rather than the session
+        var removeList = new ArrayList<Connection>();
+        Set<Connection> relevantConnections = connections.getSessionForGameID(gameID);
+        if (relevantConnections == null){
+            Connection errorConnnection = new Connection(null, 0 , null, null);
+            errorConnnection.sendMessage(new ErrorMessage("invalid gameID"));
+            return;
+        }
+        for (Connection c : relevantConnections) {
+            if (c.session.isOpen()) {
+                if (ExceptThisConnection.playerName != c.playerName) {
+                    c.sendMessage(message);
+                }
+            }else {
+                removeList.add(c);
             }
         }
-        for (var removeGameID : removeMap.keySet()){
-            connections.removeSessionFromGame(removeGameID, removeMap.get(removeGameID));
+        for (var c: removeList){
+            connections.removeSessionFromGame(gameID, c);
         }
     }
 }

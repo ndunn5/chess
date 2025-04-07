@@ -19,24 +19,24 @@ import java.io.IOException;
 
 public class ConnectionManager {
 //    public final ConcurrentHashMap<String, Connection> connections = new ConcurrentHashMap<>();
-    public final ConcurrentHashMap<Integer, Set<Session>> connections = new ConcurrentHashMap<>();
+    public final ConcurrentHashMap<Integer, Set<Connection>> connections = new ConcurrentHashMap<>();
 
 
-    public void addSessionToGame(int gameID, Session session){
-        connections.computeIfAbsent(gameID, k -> ConcurrentHashMap.newKeySet()).add(session);
+    public void addSessionToGame(int gameID, Connection connection){
+        connections.computeIfAbsent(gameID, k -> ConcurrentHashMap.newKeySet()).add(connection);
     }
 
-    public void removeSessionFromGame(int gameID, Session session){
-        Set<Session> sessions = connections.get(gameID);
-        if(sessions != null){
-            sessions.remove(session);
-            if (sessions.isEmpty()){
+    public void removeSessionFromGame(int gameID, Connection connection){
+        Set<Connection> conectionSet = connections.get(gameID);
+        if(conectionSet != null){
+            conectionSet.remove(conectionSet);
+            if (conectionSet.isEmpty()){
                 connections.remove(gameID);
             }
         }
     }
 
-    public Set<Session> getSessionForGameID(int gameID){
+    public Set<Connection> getSessionForGameID(int gameID){
         return connections.get(gameID);
     }
 }
