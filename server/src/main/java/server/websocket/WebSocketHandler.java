@@ -144,6 +144,11 @@ public class WebSocketHandler {
         ChessGame.TeamColor currentColor = null;
         try {
             authData = authDAO.getAuthDataWithAuthToken(makeMoveMessage.getAuthToken());
+            if (authData == null){
+                Connection errorConnection = new Connection(null, 0, null, session);
+                errorConnection.sendMessage(new ErrorMessage("unauthorized"));
+                return;
+            }
         } catch (DataAccessException e) {
             throw new RuntimeException(e);
         }
