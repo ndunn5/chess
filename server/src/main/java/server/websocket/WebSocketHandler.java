@@ -161,7 +161,7 @@ public class WebSocketHandler {
             board = gameData.game().getBoard();
             currentColor = getCurrentColor(gameData, playerName, currentColor);
             try {
-                if (!chessGame.validMoves((chessMove.getStartPosition())).contains(chessMove) || !chessGame.getTeamTurn().equals(currentColor)) {
+                if (!chessGame.validMoves((chessMove.getStartPosition())).contains(chessMove) || !chessGame.getTeamTurn().equals(currentColor) || chessGame.isGameOver()) {
                     Connection errorConnection = new Connection(null, 0, null, session);
                     errorConnection.sendMessage(new ErrorMessage("invalid move"));
                     return;
