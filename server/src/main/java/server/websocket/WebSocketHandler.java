@@ -85,11 +85,16 @@ public class WebSocketHandler {
             AuthData authData = authDAO.getAuthDataWithAuthToken(authToken);
             if (authData == null){
                 Connection errorConnection = new Connection(null, 0, null, session);
-                broadcastMessage(gameID, new ErrorMessage("invalid authToken"), errorConnection);
+                errorConnection.sendMessage(new ErrorMessage("invalid authToken"));
                 return;
             }//send load game message just to the user
             String playerName = authData.username();
             GameData gameData = gameDAO.getGame(gameID);
+            if (gameData == null){
+                Connection errorConnection = new Connection(null, 0, null, session);
+                errorConnection.sendMessage(new ErrorMessage("invalid gamID"));
+                return;
+            }
             if (gameData.whiteUsername().equals(playerName)){
                 playerColor = "WHITE";
             }else if(gameData.blackUsername().equals(playerName)){
