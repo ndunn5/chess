@@ -26,29 +26,11 @@ import org.eclipse.jetty.websocket.api.Session;
 import spark.Request;
 import spark.Response;
 import dataaccess.*;
-import websocket.commands.ConnectMessage;
-import websocket.commands.MakeMoveMessage;
-import websocket.commands.ResignMessage;
-import websocket.commands.UserGameCommand;
+import websocket.commands.*;
 import websocket.messages.ErrorMessage;
 import websocket.messages.LoadGameMessage;
 import websocket.messages.NotificationMessage;
 import websocket.messages.ServerMessage;
-
-//@onWebSocketError onError(throwable: Throwable): void
-//@OnWebScoketMessage onMessage(session: Session, str: string): void
-//1.determing the message type
-//2. call one of the following methods to process te message
-
-
-//look at petshop. pretty good example
-//connect(message)
-//makeMove(message)
-//leaveGame(message)
-//resignGame(message)
-
-//sendMessage(message, session)
-//broadcastMessage(gameID, message, exceptThisSession)
 
 @WebSocket
 public class WebSocketHandler {
@@ -82,6 +64,7 @@ public class WebSocketHandler {
             case CONNECT -> connect(new Gson().fromJson(message, ConnectMessage.class));
             case MAKE_MOVE -> makeMove(new Gson().fromJson(message, MakeMoveMessage.class));
             case RESIGN -> resign(new Gson().fromJson(message, ResignMessage.class));
+            case LEAVE -> leave(new Gson().fromJson(message, LeaveMessage.class));
         }
     }
 
@@ -129,10 +112,9 @@ public class WebSocketHandler {
     }
 
     private static ChessGame.TeamColor getCurrentColor(GameData gameData, String playerName) {
-
-        if (gameData.whiteUsername().equals(playerName)) {
+        if (gameData.whiteUsername()!= null && gameData.whiteUsername().equals(playerName)) {
             return ChessGame.TeamColor.WHITE;
-        } else if (gameData.blackUsername().equals(playerName)) {
+        } else if (gameData.blackUsername()!= null && gameData.blackUsername().equals(playerName)) {
             return ChessGame.TeamColor.BLACK;
         }else{
             return null;
@@ -205,7 +187,7 @@ public class WebSocketHandler {
         ChessGame chessGame = gameData.game();
         if (chessGame.isGameOver() == true){
             Connection errorConnection = new Connection(null, 0, null, session);
-            errorConnection.sendMessage(new ErrorMessage("resigners cant resign"));
+            errorConnection.sendMessage(new ErrorMessage("resigners can't resign"));
             return;
         }
         chessGame.setGameOver(true);
@@ -225,6 +207,41 @@ public class WebSocketHandler {
         broadcastMessage(gameID, notificationMessage, null);
 
 
+    }
+
+    public void leave(LeaveMessage leaveMessage){
+        int gameID = leaveMessage.getGameID();
+        String playerName;
+        GameData gameData;
+        ChessGame.TeamColor teamColor;
+        try{
+            playerName = authDAO.getAuthDataWithAuthToken(leaveMessage.getAuthToken()).username();
+        } catch (DataAccessException e) {
+            throw new RuntimeException(e);
+        }
+        Set<Connection> relevantConnections = connections.getSessionForGameID(gameID);
+        Connection thisConnection = getCorrectConnection(relevantConnections, playerName);
+        try{
+            gameData = gameDAO.getGame(gameID);
+        } catch (DataAccessException e) {
+            throw new RuntimeException(e);
+        }
+        teamColor = getCurrentColor(gameData, playerName);
+        GameData updatedGameData = new GameData(0, null, null, null, null);
+        if (teamColor == ChessGame.TeamColor.WHITE){
+            updatedGameData = new GameData(gameData.gameID(), null, gameData.blackUsername(), gameData.gameName(), gameData.game());
+        } else if (teamColor == ChessGame.TeamColor.BLACK){
+            updatedGameData = new GameData(gameData.gameID(), gameData.whiteUsername(), null, gameData.gameName(), gameData.game());
+        }
+        try{
+            gameDAO.updateGame(updatedGameData);
+        } catch (DataAccessException e) {
+            throw new RuntimeException(e);
+        }
+        String message = playerName + " left." ;
+        NotificationMessage notificationMessage = new NotificationMessage(message);
+        broadcastMessage(gameID, notificationMessage, thisConnection);
+        connections.removeSessionFromGame(gameID, thisConnection);
     }
 
     public Connection getCorrectConnection(Set<Connection> relevantConnections, String playerName){

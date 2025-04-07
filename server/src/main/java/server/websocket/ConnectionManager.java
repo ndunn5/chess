@@ -29,7 +29,7 @@ public class ConnectionManager {
     public void removeSessionFromGame(int gameID, Connection connection){
         Set<Connection> conectionSet = connections.get(gameID);
         if(conectionSet != null){
-            conectionSet.remove(conectionSet);
+            conectionSet.remove(connection);
             if (conectionSet.isEmpty()){
                 connections.remove(gameID);
             }
