@@ -203,6 +203,11 @@ public class WebSocketHandler {
             throw new RuntimeException(e);
         }
         ChessGame chessGame = gameData.game();
+        if (chessGame.isGameOver() == true){
+            Connection errorConnection = new Connection(null, 0, null, session);
+            errorConnection.sendMessage(new ErrorMessage("resigners cant resign"));
+            return;
+        }
         chessGame.setGameOver(true);
         try{
             gameDAO.updateGame(gameData);
