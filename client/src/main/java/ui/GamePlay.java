@@ -14,6 +14,7 @@ import chess.ChessBoard;
 import ui.websocket.GameHandler;
 import ui.websocket.GameUI;
 import ui.websocket.WebSocketFacade;
+import websocket.commands.ConnectMessage;
 
 import java.util.*;
 
@@ -33,15 +34,17 @@ public class GamePlay  {
     private final ArrayList<String> sideLetters = new ArrayList<>(Arrays.asList(" ", "a", "b", "c", "d", "e", "f", "g", "h", " "));
     private final ArrayList<String> sideNumbers = new ArrayList<>(Arrays.asList(" ", "1", "2", "3", "4", "5", "6", "7", "8", " "));
 //    private ChessBoard currentBoard = new ChessBoard();
-    private String clientColor = "WHITE";
+//    private String clientColor = "WHITE";
     private ChessGame chessGame = new ChessGame();
     private GameHandler gameHandler;
+    private String currentColor;
 
 
-    public GamePlay(String serverUrl, GameHandler gameHandler) {
+    public GamePlay(String serverUrl, GameHandler gameHandler, PostLoginClient postLoginClient) {
         server = new ServerFacade(serverUrl);
         this.serverUrl = serverUrl;
         this.gameHandler = gameHandler;
+        this.currentColor = postLoginClient.getCurrentColor();
     }
 
     public String eval(String input) {
@@ -75,7 +78,7 @@ public class GamePlay  {
 
     public String redraw(){
 //        return gameHandler.showBoard(new Gson().toJson(currentBoard), clientColor);
-            return gameHandler.drawBoard(clientColor, null);
+            return gameHandler.drawBoard(currentColor, null);
 //            return gameHandler.drawBoard(currentBoard, clientColor, null);
     }
 
@@ -95,7 +98,7 @@ public class GamePlay  {
                 if (validMoves.isEmpty()){
                     return "no valid moves";
                 }
-                return gameHandler.drawBoard(clientColor, validMoves);
+                return gameHandler.drawBoard(currentColor, validMoves);
 //                return gameHandler.drawBoard(currentBoard, clientColor, validMoves);
 //                return letterAndNumber;
             }else{

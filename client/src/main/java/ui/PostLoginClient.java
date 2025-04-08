@@ -23,6 +23,7 @@ public class PostLoginClient {
     private Map<Integer, Map<String, Object>> screenIDToGameDetails = new HashMap<>();
     private GamePlay gamePlay;
     private GameHandler gameHandler;
+    public String currentColor = "WHITE";
 
     public PostLoginClient(String serverUrl, GameHandler gameHandler) {
         server = new ServerFacade(serverUrl);
@@ -132,6 +133,10 @@ public class PostLoginClient {
         }
     }
 
+    public String getCurrentColor(){
+        return currentColor;
+    }
+
     public String joinGame(String... params) throws ResponseException {
         if (screenIDToGameDetails.isEmpty()) {
             return "please list games first";
@@ -146,6 +151,7 @@ public class PostLoginClient {
                 Number gameIDObj = (Number) gameDetails.get("gameID");
                 int gameID = gameIDObj.intValue();
                 String currentBoard = (String) gameDetails.get("game");
+                currentColor = params[1];
 
 
                 JoinGameRequest joinGameRequest = new JoinGameRequest(params[1], gameID);

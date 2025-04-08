@@ -18,13 +18,12 @@ public class Repl {
 
         GameHandler gameHandler = new GameUI(serverUrl);
         postLoginClient = new PostLoginClient(serverUrl, gameHandler);
-        gamePlay = new GamePlay(serverUrl, gameHandler);
+        gamePlay = new GamePlay(serverUrl, gameHandler, postLoginClient);
     }
 
     public void run() {
         System.out.println("\uD83D\uDC51 Welcome to 240 chess. Type help to get started. \uD83D\uDC51");
         System.out.print(preLoginClient.help());
-
         Scanner scanner = new Scanner(System.in);
         var result = "";
         while (!result.equals("quit")) {

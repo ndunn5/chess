@@ -19,6 +19,7 @@ public class WebSocketFacade extends Endpoint {
 
     Session session;
     GameHandler gameHandler;
+    String currentColor = "BLACK";
 
 
     public WebSocketFacade(String url, GameHandler gameHandler) throws ResponseException {
@@ -81,6 +82,7 @@ public class WebSocketFacade extends Endpoint {
 
     public void connect(ConnectMessage connectMessage) {
         try {
+            currentColor = connectMessage.getColor();
             sendConnectMessage(connectMessage);
 //            sendMessage(connectMessage);
         } catch (ResponseException e) {
@@ -149,8 +151,7 @@ public class WebSocketFacade extends Endpoint {
     }
 
     public void loadGameOnMessage(LoadGameMessage loadGameMessage){
-        System.out.print(gameHandler.getColor());
-        gameHandler.showBoard(loadGameMessage.getGameData().game().getBoard(), gameHandler.getColor());
+        gameHandler.showBoard(loadGameMessage.getGameData().game().getBoard(), currentColor);
     }
 
     public void notificaitonOnMessage(NotificationMessage notificationMessage){
