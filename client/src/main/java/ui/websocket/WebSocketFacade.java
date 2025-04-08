@@ -2,7 +2,7 @@ package ui.websocket;
 
 import com.google.gson.Gson;
 import exception.ResponseException;
-import websocket.commands.UserGameCommand;
+import websocket.commands.*;
 import websocket.messages.ServerMessage;
 
 import javax.websocket.*;
@@ -10,16 +10,18 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 
-public class WebSocketFacade extends Endpoint{
-    private Session session;
-    private NotificationHandler notificationHandler;
+//need to extend Endpoint for websocket to work properly
+public class WebSocketFacade extends Endpoint {
+
+    Session session;
+    GameHandler gameHandler;
 
 
-    public WebSocketFacade(String url, NotificationHandler notificationHandler) throws ResponseException {
+    public WebSocketFacade(String url, GameHandler gameHandler) throws ResponseException {
         try {
             url = url.replace("http", "ws");
             URI socketURI = new URI(url + "/ws");
-            this.notificationHandler = notificationHandler;
+            this.gameHandler = gameHandler;
 
             WebSocketContainer container = ContainerProvider.getWebSocketContainer();
             this.session = container.connectToServer(this, socketURI);
@@ -29,7 +31,7 @@ public class WebSocketFacade extends Endpoint{
                 @Override
                 public void onMessage(String message) {
                     ServerMessage serverMessage = new Gson().fromJson(message, ServerMessage.class);
-                    notificationHandler.notify(serverMessage);
+                    gameHandler.printMessage(serverMessage);
                 }
             });
         } catch (DeploymentException | IOException | URISyntaxException ex) {
@@ -39,6 +41,61 @@ public class WebSocketFacade extends Endpoint{
 
     @Override
     public void onOpen(Session session, EndpointConfig endpointConfig) {
+    }
+
+    @Override
+    public void onError(Session session, Throwable thr) {
+    }
+
+    @Override
+    public void onClose(Session session, CloseReason closeReason) {
+    }
+
+    private void connect(ConnectMessage connectMessage) {
+        try{
+            sendMessage(connectMessage);
+        } catch (ResponseException e) {
+            throw new RuntimeException(e.getMessage());
+        }
+    }
+
+    public void makeMove(MakeMoveMessage makeMoveMessage) {
+        try{
+            sendMessage(makeMoveMessage);
+        } catch (ResponseException e) {
+            throw new RuntimeException(e.getMessage());
+        }
+    }
+
+    public void resign(ResignMessage resignMessage){
+        try{
+            sendMessage(resignMessage);
+        } catch (ResponseException e) {
+            throw new RuntimeException(e.getMessage());
+        }
+    }
+
+    public void leave(LeaveMessage leaveMessage){
+        try{
+            sendMessage(leaveMessage);
+        } catch (ResponseException e) {
+            throw new RuntimeException(e.getMessage());
+        }
+    }
+
+
+        private void sendMessage(UserGameCommand message) throws ResponseException {
+        try {
+            String jsonMessage = new Gson().toJson(message);
+            this.session.getBasicRemote().sendText(jsonMessage);
+        } catch (IOException ex) {
+            throw new ResponseException(500, ex.getMessage());
+        }
+    }
+
+    public void onMessage(String message) {
+        ServerMessage serverMessage = new Gson().fromJson(message, ServerMessage.class); //numba one
+        gameHandler.printMessage(serverMessage); //surgeon
     }
 
 }

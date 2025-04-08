@@ -1,5 +1,8 @@
 package ui;
 
+import ui.websocket.GameHandler;
+import ui.websocket.GameUI;
+
 import java.util.Scanner;
 
 
@@ -11,8 +14,11 @@ public class Repl {
 
     public Repl(String serverUrl) {
         preLoginClient = new PreLoginClient(serverUrl);
-        gamePlay = new GamePlay(serverUrl);
-        postLoginClient = new PostLoginClient(serverUrl, gamePlay);
+
+
+        GameHandler gameHandler = new GameUI(serverUrl);
+        postLoginClient = new PostLoginClient(serverUrl, gameHandler);
+        gamePlay = new GamePlay(serverUrl, gameHandler);
     }
 
     public void run() {
