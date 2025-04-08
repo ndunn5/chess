@@ -1,6 +1,7 @@
 package server.websocket;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -23,8 +24,16 @@ public class ConnectionManager {
 
 
     public void addSessionToGame(int gameID, Connection connection){
-        connections.computeIfAbsent(gameID, k -> ConcurrentHashMap.newKeySet()).add(connection);
+        if (connections.containsKey(gameID)){
+            Set<Connection> relevantConnection = getSessionForGameID(gameID);
+            relevantConnection.add(connection);
+        } else{
+            Set<Connection> emptyConnections = new HashSet<>();
+            emptyConnections.add(connection);
+            connections.put(gameID, emptyConnections);
+        }
     }
+
 
     public void removeSessionFromGame(int gameID, Connection connection){
         Set<Connection> conectionSet = connections.get(gameID);

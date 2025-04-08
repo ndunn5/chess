@@ -31,6 +31,7 @@ public class Repl {
             printPrompt();
             String line = scanner.nextLine();
 
+
             try {
                 switch(state){
                     case SIGNEDOUT -> result = preLoginClient.eval(line);

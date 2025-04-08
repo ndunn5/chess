@@ -151,12 +151,12 @@ public class PostLoginClient {
                 JoinGameRequest joinGameRequest = new JoinGameRequest(params[1], gameID);
                 joinGameRequest.addAuthToken(PreLoginClient.getAuthToken());
                 JoinGameResult joinGameResult = server.handleJoinGame(joinGameRequest);
-                Repl.updateState(State.GAMEPLAY);
 
                 WebSocketFacade ws = new WebSocketFacade(serverUrl, gameHandler);
 
                 ws.connect(new ConnectMessage(joinGameRequest.getAuthToken(), gameID,params[1]));
-                return "Joining game...";
+                Repl.updateState(State.GAMEPLAY);
+                return "";
 //                return gameHandler.showBoard(currentBoard, params[1]);
             } catch (ResponseException e) {
                 throw new ResponseException(400, e.getMessage());

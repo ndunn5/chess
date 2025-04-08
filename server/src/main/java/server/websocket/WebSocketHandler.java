@@ -32,6 +32,8 @@ import websocket.messages.LoadGameMessage;
 import websocket.messages.NotificationMessage;
 import websocket.messages.ServerMessage;
 
+import javax.websocket.OnOpen;
+
 @WebSocket
 public class WebSocketHandler {
 
@@ -47,6 +49,11 @@ public class WebSocketHandler {
         this.userDAO = userDAO;
         this.authDAO = authDAO;
         this.gameDAO = gameDAO;
+    }
+
+    @OnOpen
+    public void onOpen(Session session) {
+        System.out.println("WebSocket opened for session: ");
     }
 
     @OnWebSocketError

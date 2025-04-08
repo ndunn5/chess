@@ -40,12 +40,15 @@ public class WebSocketFacade extends Endpoint {
                         case ServerMessage.ServerMessageType.NOTIFICATION:
                             NotificationMessage notificationMessage = new Gson().fromJson(message, NotificationMessage.class);
                             WebSocketFacade.this.notificaitonOnMessage(notificationMessage);
+                            break;
                         case ServerMessage.ServerMessageType.LOAD_GAME:
                             LoadGameMessage loadGameMessage = new Gson().fromJson(message, LoadGameMessage.class);
                             WebSocketFacade.this.loadGameOnMessage(loadGameMessage);
+                            break;
                         case ServerMessage.ServerMessageType.ERROR:
                             ErrorMessage errorMessage = new Gson().fromJson(message, ErrorMessage.class);
                             WebSocketFacade.this.errorOnMessage(errorMessage);
+                            break;
                     }
 
 
@@ -78,7 +81,8 @@ public class WebSocketFacade extends Endpoint {
 
     public void connect(ConnectMessage connectMessage) {
         try {
-            sendMessage(connectMessage);
+            sendConnectMessage(connectMessage);
+//            sendMessage(connectMessage);
         } catch (ResponseException e) {
             throw new RuntimeException(e.getMessage());
         }
@@ -86,7 +90,7 @@ public class WebSocketFacade extends Endpoint {
 
     public void makeMove(MakeMoveMessage makeMoveMessage) {
         try {
-            sendMessage(makeMoveMessage);
+            sendMakeMoveMessage(makeMoveMessage);
         } catch (ResponseException e) {
             throw new RuntimeException(e.getMessage());
         }
@@ -94,7 +98,7 @@ public class WebSocketFacade extends Endpoint {
 
     public void resign(ResignMessage resignMessage) {
         try {
-            sendMessage(resignMessage);
+            sendResignMessage(resignMessage);
         } catch (ResponseException e) {
             throw new RuntimeException(e.getMessage());
         }
@@ -102,17 +106,42 @@ public class WebSocketFacade extends Endpoint {
 
     public void leave(LeaveMessage leaveMessage) {
         try {
-            sendMessage(leaveMessage);
+            sendLeaveMessage(leaveMessage);
         } catch (ResponseException e) {
             throw new RuntimeException(e.getMessage());
         }
     }
 
-
-    private void sendMessage(UserGameCommand message) throws ResponseException {
+    private void sendConnectMessage(ConnectMessage connectMessage) throws ResponseException {
         try {
+            String jsonMessage = new Gson().toJson(connectMessage);
+            this.session.getBasicRemote().sendText(jsonMessage);
+        } catch (IOException ex) {
+            throw new ResponseException(500, ex.getMessage());
+        }
+    }
 
-            String jsonMessage = new Gson().toJson(message);
+    private void sendMakeMoveMessage(MakeMoveMessage makeMoveMessage) throws ResponseException {
+        try {
+            String jsonMessage = new Gson().toJson(makeMoveMessage);
+            this.session.getBasicRemote().sendText(jsonMessage);
+        } catch (IOException ex) {
+            throw new ResponseException(500, ex.getMessage());
+        }
+    }
+
+    private void sendResignMessage(ResignMessage resignMessage) throws ResponseException {
+        try {
+            String jsonMessage = new Gson().toJson(resignMessage);
+            this.session.getBasicRemote().sendText(jsonMessage);
+        } catch (IOException ex) {
+            throw new ResponseException(500, ex.getMessage());
+        }
+    }
+
+    private void sendLeaveMessage(LeaveMessage leaveMessage) throws ResponseException {
+        try {
+            String jsonMessage = new Gson().toJson(leaveMessage);
             this.session.getBasicRemote().sendText(jsonMessage);
         } catch (IOException ex) {
             throw new ResponseException(500, ex.getMessage());
@@ -120,21 +149,8 @@ public class WebSocketFacade extends Endpoint {
     }
 
     public void loadGameOnMessage(LoadGameMessage loadGameMessage){
-
+        System.out.print(gameHandler.getColor());
         gameHandler.showBoard(loadGameMessage.getGameData().game().getBoard(), gameHandler.getColor());
-
-//        String testGameBoard = (new Gson().toJson(gameHandler.getCurrentBoard()));
-//        String testColor = gameHandler.getColor();
-//        try{
-//        } catch (RuntimeException e) {
-//            throw new RuntimeException(e.getMessage());
-//        }
-//                System.out.print(gameHandler.showBoard(new Gson().toJson(new ChessBoard()), gameHandler.getColor()));
-//            if (testGameBoard == null){
-//                    return gameHandler.showBoard(new Gson().toJson(new ChessBoard()), gameHandler.getColor());
-//                }else{
-//                    return gameHandler.showBoard(new Gson().toJson(gameHandler.getCurrentBoard()), gameHandler.getColor());
-//                }
     }
 
     public void notificaitonOnMessage(NotificationMessage notificationMessage){
