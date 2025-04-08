@@ -24,8 +24,9 @@ public class PostLoginClient {
     private GamePlay gamePlay;
     private GameHandler gameHandler;
     public String currentColor = "WHITE";
+    public String authToken;
 
-    public PostLoginClient(String serverUrl, GameHandler gameHandler) {
+    public PostLoginClient(String serverUrl, GameHandler gameHandler){
         server = new ServerFacade(serverUrl);
         this.serverUrl = serverUrl;
         this.gameHandler = gameHandler;
@@ -104,7 +105,8 @@ public class PostLoginClient {
 
     public String listGames() throws ResponseException {
         try {
-            ListGamesResult listGamesResult = server.handleListGames(new ListGamesRequest(PreLoginClient.getAuthToken()));
+            authToken = PreLoginClient.getAuthToken();
+            ListGamesResult listGamesResult = server.handleListGames(new ListGamesRequest(authToken));
             if (listGamesResult.games().isEmpty()) {
                 return "No current games. Please Create a Game.";
             }
@@ -159,8 +161,9 @@ public class PostLoginClient {
                 JoinGameResult joinGameResult = server.handleJoinGame(joinGameRequest);
 
                 WebSocketFacade ws = new WebSocketFacade(serverUrl, gameHandler);
+                String authToken = joinGameRequest.getAuthToken();
 
-                ws.connect(new ConnectMessage(joinGameRequest.getAuthToken(), gameID,params[1]));
+                ws.connect(new ConnectMessage(authToken, gameID,params[1]));
                 Repl.updateState(State.GAMEPLAY);
                 return "";
 //                return gameHandler.showBoard(currentBoard, params[1]);
@@ -198,7 +201,14 @@ public class PostLoginClient {
             JsonObject boardObject = jsonObject.getAsJsonObject("board");
             ChessBoard board = gson.fromJson(boardObject, ChessBoard.class);
 
-            return gameHandler.showBoard(board, "WHITE");
+            WebSocketFacade ws = new WebSocketFacade(serverUrl, gameHandler);
+            ws.connect(new ConnectMessage(authToken, gameID, "WHITE"));
+
+
+            Repl.updateState(State.GAMEPLAY);
+            return "";
+
+//            return gameHandler.showBoard(board, "WHITE");
         }
         throw new ResponseException(400, "Expected: <ID>");
     }

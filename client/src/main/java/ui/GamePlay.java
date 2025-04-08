@@ -6,6 +6,8 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import exception.ResponseException;
+import extramodel.JoinGameRequest;
+import model.JoinGameResult;
 import model.LogoutRequest;
 import model.LogoutResult;
 import server.ServerFacade;
@@ -15,10 +17,11 @@ import ui.websocket.GameHandler;
 import ui.websocket.GameUI;
 import ui.websocket.WebSocketFacade;
 import websocket.commands.ConnectMessage;
+import websocket.commands.LeaveMessage;
 
 import java.util.*;
 
-public class GamePlay  {
+public class GamePlay {
     //start with server side stuff(make a separate class that can also access the DAOs)-> make sure its working in the webiste-> test cases  -> go to the client side things
     //be careful with copying and pasting from petshop
     //think through how someone can break things
@@ -37,13 +40,18 @@ public class GamePlay  {
 //    private String clientColor = "WHITE";
     private ChessGame chessGame = new ChessGame();
     private GameHandler gameHandler;
-    private String currentColor;
+    private String authoken;
+    private int gameID;
+    private String playerName;
+    String currentColor;
+    private PostLoginClient postLoginClient;
 
 
     public GamePlay(String serverUrl, GameHandler gameHandler, PostLoginClient postLoginClient) {
         server = new ServerFacade(serverUrl);
         this.serverUrl = serverUrl;
         this.gameHandler = gameHandler;
+        this.postLoginClient = postLoginClient;
         this.currentColor = postLoginClient.getCurrentColor();
     }
 
@@ -138,6 +146,13 @@ public class GamePlay  {
 
 
     public String leave(){
-        return "she left";
+        try{
+            WebSocketFacade ws = new WebSocketFacade(serverUrl, gameHandler);
+            ws.leave(new LeaveMessage(authoken, gameID, playerName, currentColor));
+        } catch (ResponseException e) {
+            throw new RuntimeException(e);
+        }
+        return "dummy string";
     }
+
 }
