@@ -4,12 +4,14 @@ import dataaccess.*;
 import model.*;
 import extramodel.ClearDatabaseResult;
 import extramodel.JoinGameRequest;
+import server.websocket.Connection;
 import service.*;
 import spark.*;
 import static spark.Spark.*;
 import server.websocket.WebSocketHandler;
 
 import com.google.gson.Gson;
+import websocket.messages.ServerMessage;
 
 public class Server {
 
@@ -46,9 +48,7 @@ public class Server {
         port(desiredPort);
         staticFiles.location("web");
 
-        //added
         Spark.webSocket("/ws", webSocketHandler);
-        //this
 
         delete("/db", (request, response) -> handleClearDatabase(response));
         post("/user", (request, response) -> handleRegister(request, response));

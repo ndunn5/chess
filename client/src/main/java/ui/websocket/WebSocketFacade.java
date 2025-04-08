@@ -1,8 +1,12 @@
 package ui.websocket;
 
+import chess.ChessBoard;
 import com.google.gson.Gson;
 import exception.ResponseException;
 import websocket.commands.*;
+import websocket.messages.ErrorMessage;
+import websocket.messages.LoadGameMessage;
+import websocket.messages.NotificationMessage;
 import websocket.messages.ServerMessage;
 
 import javax.websocket.*;
@@ -27,13 +31,34 @@ public class WebSocketFacade extends Endpoint {
             this.session = container.connectToServer(this, socketURI);
 
             //set message handler
+
             this.session.addMessageHandler(new MessageHandler.Whole<String>() {
                 @Override
                 public void onMessage(String message) {
                     ServerMessage serverMessage = new Gson().fromJson(message, ServerMessage.class);
-                    gameHandler.printMessage(serverMessage);
+                    switch (serverMessage.getServerMessageType()){
+                        case ServerMessage.ServerMessageType.NOTIFICATION:
+                            NotificationMessage notificationMessage = new Gson().fromJson(message, NotificationMessage.class);
+                            WebSocketFacade.this.notificaitonOnMessage(notificationMessage);
+                        case ServerMessage.ServerMessageType.LOAD_GAME:
+                            LoadGameMessage loadGameMessage = new Gson().fromJson(message, LoadGameMessage.class);
+                            WebSocketFacade.this.loadGameOnMessage(loadGameMessage);
+                        case ServerMessage.ServerMessageType.ERROR:
+                            ErrorMessage errorMessage = new Gson().fromJson(message, ErrorMessage.class);
+                            WebSocketFacade.this.errorOnMessage(errorMessage);
+                    }
+
+
+
                 }
             });
+//            this.session.addMessageHandler(new MessageHandler.Whole<String>() {
+//                @Override
+//                public void onMessage(String message) {
+//                    ServerMessage serverMessage = new Gson().fromJson(message, ServerMessage.class);
+//                    gameHandler.printMessage(serverMessage);
+//                }
+//            });
         } catch (DeploymentException | IOException | URISyntaxException ex) {
             throw new ResponseException(500, ex.getMessage());
         }
@@ -51,8 +76,8 @@ public class WebSocketFacade extends Endpoint {
     public void onClose(Session session, CloseReason closeReason) {
     }
 
-    private void connect(ConnectMessage connectMessage) {
-        try{
+    public void connect(ConnectMessage connectMessage) {
+        try {
             sendMessage(connectMessage);
         } catch (ResponseException e) {
             throw new RuntimeException(e.getMessage());
@@ -60,23 +85,23 @@ public class WebSocketFacade extends Endpoint {
     }
 
     public void makeMove(MakeMoveMessage makeMoveMessage) {
-        try{
+        try {
             sendMessage(makeMoveMessage);
         } catch (ResponseException e) {
             throw new RuntimeException(e.getMessage());
         }
     }
 
-    public void resign(ResignMessage resignMessage){
-        try{
+    public void resign(ResignMessage resignMessage) {
+        try {
             sendMessage(resignMessage);
         } catch (ResponseException e) {
             throw new RuntimeException(e.getMessage());
         }
     }
 
-    public void leave(LeaveMessage leaveMessage){
-        try{
+    public void leave(LeaveMessage leaveMessage) {
+        try {
             sendMessage(leaveMessage);
         } catch (ResponseException e) {
             throw new RuntimeException(e.getMessage());
@@ -84,8 +109,9 @@ public class WebSocketFacade extends Endpoint {
     }
 
 
-        private void sendMessage(UserGameCommand message) throws ResponseException {
+    private void sendMessage(UserGameCommand message) throws ResponseException {
         try {
+
             String jsonMessage = new Gson().toJson(message);
             this.session.getBasicRemote().sendText(jsonMessage);
         } catch (IOException ex) {
@@ -93,9 +119,29 @@ public class WebSocketFacade extends Endpoint {
         }
     }
 
-    public void onMessage(String message) {
-        ServerMessage serverMessage = new Gson().fromJson(message, ServerMessage.class); //numba one
-        gameHandler.printMessage(serverMessage); //surgeon
+    public void loadGameOnMessage(LoadGameMessage loadGameMessage){
+
+        gameHandler.showBoard(loadGameMessage.getGameData().game().getBoard(), gameHandler.getColor());
+
+//        String testGameBoard = (new Gson().toJson(gameHandler.getCurrentBoard()));
+//        String testColor = gameHandler.getColor();
+//        try{
+//        } catch (RuntimeException e) {
+//            throw new RuntimeException(e.getMessage());
+//        }
+//                System.out.print(gameHandler.showBoard(new Gson().toJson(new ChessBoard()), gameHandler.getColor()));
+//            if (testGameBoard == null){
+//                    return gameHandler.showBoard(new Gson().toJson(new ChessBoard()), gameHandler.getColor());
+//                }else{
+//                    return gameHandler.showBoard(new Gson().toJson(gameHandler.getCurrentBoard()), gameHandler.getColor());
+//                }
     }
 
+    public void notificaitonOnMessage(NotificationMessage notificationMessage){
+        gameHandler.printMessage(notificationMessage);
+    }
+
+    public void errorOnMessage(ErrorMessage errorMesssage){
+        gameHandler.printMessage(errorMesssage);
+    }
 }

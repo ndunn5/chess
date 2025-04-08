@@ -1,5 +1,9 @@
 package ui;
 
+import chess.ChessBoard;
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import exception.ResponseException;
 import extramodel.JoinGameRequest;
 import model.*;
@@ -7,6 +11,7 @@ import server.ServerFacade;
 import ui.websocket.GameHandler;
 import ui.websocket.GameUI;
 import ui.websocket.WebSocketFacade;
+import websocket.commands.ConnectMessage;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -148,8 +153,11 @@ public class PostLoginClient {
                 JoinGameResult joinGameResult = server.handleJoinGame(joinGameRequest);
                 Repl.updateState(State.GAMEPLAY);
 
-//                WebSocketFacade ws = new WebSocketFacade(serverUrl, gamePlay)
-                return gameHandler.showBoard(currentBoard, params[1]);
+                WebSocketFacade ws = new WebSocketFacade(serverUrl, gameHandler);
+
+                ws.connect(new ConnectMessage(joinGameRequest.getAuthToken(), gameID,params[1]));
+                return "Joining game...";
+//                return gameHandler.showBoard(currentBoard, params[1]);
             } catch (ResponseException e) {
                 throw new ResponseException(400, e.getMessage());
             }
@@ -176,8 +184,15 @@ public class PostLoginClient {
             String currentBoard = (String) gameDetails.get("game");
 
             Repl.updateState(State.GAMEPLAY);
+            //convert currentBoard to real board here
 
-            return gameHandler.showBoard(currentBoard, "WHITE");
+
+            Gson gson = new Gson();
+            JsonObject jsonObject = JsonParser.parseString(currentBoard).getAsJsonObject();
+            JsonObject boardObject = jsonObject.getAsJsonObject("board");
+            ChessBoard board = gson.fromJson(boardObject, ChessBoard.class);
+
+            return gameHandler.showBoard(board, "WHITE");
         }
         throw new ResponseException(400, "Expected: <ID>");
     }

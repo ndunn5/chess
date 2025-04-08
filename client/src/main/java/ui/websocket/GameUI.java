@@ -5,15 +5,12 @@ import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import exception.ResponseException;
-import model.GameData;
 import ui.EscapeSequences;
-import ui.GamePlay;
 import websocket.messages.ServerMessage;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Iterator;
 
 public class GameUI implements GameHandler{
     private WebSocketFacade wsFacade;
@@ -38,7 +35,7 @@ public class GameUI implements GameHandler{
 
     @Override
     public void printMessage(ServerMessage message) {
-        System.out.println(message);
+        System.out.println(message.toString());
     }
 
     @Override
@@ -46,16 +43,23 @@ public class GameUI implements GameHandler{
         return currentBoard;
     }
 
-    public String showBoard(String boardState, String whiteOrBlack) {
-        this.clientColor = whiteOrBlack;
-        Gson gson = new Gson();
-        JsonObject jsonObject = JsonParser.parseString(boardState).getAsJsonObject();
-        JsonObject boardObject = jsonObject.getAsJsonObject("board");
-        currentBoard = gson.fromJson(boardObject, ChessBoard.class);
+    @Override
+    public String getColor(){
+        return clientColor;
+    }
+
+    public String showBoard(ChessBoard board, String whiteOrBlack) {//can just pass in the object itself
+        clientColor = whiteOrBlack;
+//        Gson gson = new Gson();
+//        JsonObject jsonObject = JsonParser.parseString(boardState).getAsJsonObject();
+//        JsonObject boardObject = jsonObject.getAsJsonObject("board");
+//        currentBoard = gson.fromJson(boardObject, ChessBoard.class);
+        currentBoard = board;
+        System.out.print(drawBoard(whiteOrBlack, null));
         return drawBoard(whiteOrBlack, null);
     }
 
-    public String drawBoard( String whiteOrBlack, Collection<ChessMove> validMoves) {
+    public String drawBoard(String whiteOrBlack, Collection<ChessMove> validMoves) {
         StringBuilder boardDisplay = new StringBuilder();
         Collection<ChessPosition> justChessEndPositions = new ArrayList<>();
         if (validMoves != null){
