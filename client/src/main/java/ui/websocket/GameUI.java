@@ -70,6 +70,7 @@ public class GameUI implements GameHandler{
                 }
             }
         }
+        boardDisplay.append("\n");
 
         for (int row = 0; row < 10; row++) {
             if (row == 0 || row == 9) {
