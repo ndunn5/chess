@@ -182,7 +182,13 @@ public class WebSocketHandler {
                         notificationMessage = new NotificationMessage(message);
                         broadcastMessage(gameID, notificationMessage, null);
                         chessGame.setGameOver(true);
-                    } else if (gameData.game().isInCheck(ChessGame.TeamColor.BLACK) && !gameData.game().isInCheckmate(ChessGame.TeamColor.BLACK)){
+                    } else if (gameData.game().isInStalemate(ChessGame.TeamColor.BLACK)){
+                        message = "stale mate! it is a tie";
+                        notificationMessage = new NotificationMessage(message);
+                        broadcastMessage(gameID, notificationMessage, null);
+                        chessGame.setGameOver(true);
+                    }
+                    else if (gameData.game().isInCheck(ChessGame.TeamColor.BLACK) && !gameData.game().isInCheckmate(ChessGame.TeamColor.BLACK)){
                         message = gameData.blackUsername() + " is in check";
                         notificationMessage = new NotificationMessage(message);
                         broadcastMessage(gameID, notificationMessage, null);
@@ -190,6 +196,11 @@ public class WebSocketHandler {
                 } else{
                     if(gameData.game().isInCheckmate(ChessGame.TeamColor.WHITE)){
                         message = gameData.whiteUsername() + " is in checkMate. " + gameData.blackUsername() + " won!";
+                        notificationMessage = new NotificationMessage(message);
+                        broadcastMessage(gameID, notificationMessage, null);
+                        chessGame.setGameOver(true);
+                    }else if (gameData.game().isInStalemate(ChessGame.TeamColor.WHITE)){
+                        message = "stale mate! it is a tie";
                         notificationMessage = new NotificationMessage(message);
                         broadcastMessage(gameID, notificationMessage, null);
                         chessGame.setGameOver(true);
