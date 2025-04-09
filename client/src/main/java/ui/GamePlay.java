@@ -19,6 +19,7 @@ import ui.websocket.WebSocketFacade;
 import websocket.commands.ConnectMessage;
 import websocket.commands.LeaveMessage;
 import websocket.commands.MakeMoveMessage;
+import websocket.commands.ResignMessage;
 
 import java.util.*;
 
@@ -73,11 +74,12 @@ public class GamePlay {
             var cmd = (tokens.length > 0) ? tokens[0] : "help";
             var params = Arrays.copyOfRange(tokens, 1, tokens.length);
             return switch (cmd) {
-                case ("logout") -> logout();
                 case ("redraw") -> redraw();
                 case ("highlight") -> highlight(params);
                 case ("leave") -> leave();
                 case ("move") -> makeMove(params);
+                case ("resign") -> resign();
+                case ("yes") -> confirmResignation();
                 default -> help();
             };
         } catch (ResponseException ex) {
@@ -162,22 +164,24 @@ public class GamePlay {
         }
 }
 
-    public String logout() throws ResponseException {
-        try {
-            LogoutResult logoutResult = server.handleLogout(new LogoutRequest(PreLoginClient.getAuthToken()));
-            Repl.updateState(State.SIGNEDOUT);
-            return "You signed out";
-        } catch (ResponseException e) {
-            throw new ResponseException(400, e.getMessage());
-        }
-    }
 
 
     public String leave(){
         ws.leave(new LeaveMessage(authToken, gameID, playerName, currentColor));
         Repl.updateState(State.SIGNEDIN);
-        return "left game successfully";
+        return "left game successfully.";
     }
+
+    public String resign(){
+        return "type 'yes' to confirm resignation";
+    }
+
+    public String confirmResignation(){
+        ws.resign(new ResignMessage(authToken, gameID, playerName, currentColor));
+        return "you lost.";
+    }
+
+
 
     public String makeMove(String... params){
         if (params.length == 2){

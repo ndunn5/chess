@@ -23,7 +23,7 @@ public class PostLoginClient {
     private Map<Integer, Map<String, Object>> screenIDToGameDetails = new HashMap<>();
     private GamePlay gamePlay;
     private GameHandler gameHandler;
-    public String currentColor = "WHITE";
+    public String currentColor;
     public String authToken;
     public WebSocketFacade ws;
     public int gameID;
@@ -32,6 +32,7 @@ public class PostLoginClient {
         server = new ServerFacade(serverUrl);
         this.serverUrl = serverUrl;
         this.gameHandler = gameHandler;
+        this.currentColor = "WHITE";
     }
 
     private String checkSignedIn() {
