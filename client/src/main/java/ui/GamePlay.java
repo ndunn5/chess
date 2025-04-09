@@ -121,6 +121,8 @@ public class GamePlay {
                 if (chessPiece == null){
                     throw new ResponseException(400, "there is no piece there");
                 }
+                chessGame.setBoard(gameHandler.getCurrentBoard());
+
                 Collection<ChessMove> validMoves = chessGame.validMoves(chessPosition);
                 if (validMoves.isEmpty()){
                     return "no valid moves";
@@ -136,8 +138,8 @@ public class GamePlay {
     }
 
     private ChessPosition getChessPosition(String letterAndNumber) {
+        int col = "abcdefgh".indexOf(Character.toLowerCase(letterAndNumber.charAt(0))) + 1;
         int row = Character.getNumericValue(letterAndNumber.charAt(1));
-        int col = sideLetters.indexOf(String.valueOf(letterAndNumber.charAt(0)));
         ChessPosition chessPosition = new ChessPosition(row, col);
         return chessPosition;
     }
