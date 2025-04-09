@@ -174,9 +174,15 @@ public class WebSocketHandler {
                     errorConnection.sendMessage(new ErrorMessage("invalid move"));
                     return;
                 }
+                chessGame.makeMove(makeMoveMessage.getChessMove());
+                gameDAO.updateGame(gameData);
                 if (currentColor == ChessGame.TeamColor.WHITE){
                     if (gameData.game().isInCheck(ChessGame.TeamColor.BLACK)){
                         message = gameData.blackUsername() + " is in check";
+                        notificationMessage = new NotificationMessage(message);
+                        broadcastMessage(gameID, notificationMessage, thisConnection);
+                    } else if(gameData.game().isInCheckmate(ChessGame.TeamColor.BLACK)){
+                        message = gameData.blackUsername() + " is in checkMate";
                         notificationMessage = new NotificationMessage(message);
                         broadcastMessage(gameID, notificationMessage, thisConnection);
                     }
@@ -185,16 +191,17 @@ public class WebSocketHandler {
                         message = gameData.whiteUsername() + " is in check";
                         notificationMessage = new NotificationMessage(message);
                         broadcastMessage(gameID, notificationMessage, thisConnection);
+                    } else if(gameData.game().isInCheckmate(ChessGame.TeamColor.WHITE)){
+                        message = gameData.whiteUsername() + " is in checkMate";
+                        notificationMessage = new NotificationMessage(message);
+                        broadcastMessage(gameID, notificationMessage, thisConnection);
                     }
                 }
-                chessGame.makeMove(makeMoveMessage.getChessMove());
-                gameDAO.updateGame(gameData); //gameData may not be updated we will see
 
                 LoadGameMessage loadGameMessage = new LoadGameMessage(gameData);
                 broadcastMessage(gameID, loadGameMessage, null);
 
                 message = playerName + " made this chessmove: " + chessMove.getStartPosition() + " to " +  chessMove.getEndPosition();
-//                System.out.print(message);
                 notificationMessage = new NotificationMessage(message);
                 broadcastMessage(gameID, notificationMessage, thisConnection);
 
