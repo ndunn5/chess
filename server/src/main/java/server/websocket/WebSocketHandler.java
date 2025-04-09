@@ -51,11 +51,6 @@ public class WebSocketHandler {
         this.gameDAO = gameDAO;
     }
 
-    @OnOpen
-    public void onOpen(Session session) {
-        System.out.println("WebSocket opened for session: ");
-    }
-
     @OnWebSocketError
     public void onError(Throwable throwable) {
         System.err.println("WebSocket Error: " + throwable.getMessage());
