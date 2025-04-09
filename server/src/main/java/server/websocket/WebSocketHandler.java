@@ -88,16 +88,29 @@ public class WebSocketHandler {
             }
             String playerName = authData.username();
             GameData gameData = gameDAO.getGame(gameID);
+            String message;
             if (gameData == null) {
                 Connection errorConnection = new Connection(null, 0, null, session);
                 errorConnection.sendMessage(new ErrorMessage("invalid gamID"));
                 return;
             }//can also check if its null
-            if (gameData.whiteUsername() == null){
+            if (playerName.equals(gameData.blackUsername())){
                 playerColor = "BLACK";
-            } else if (gameData.blackUsername() == null){
+                message = playerName + " has joined as " + playerColor + ".";
+            } else if (playerName.equals(gameData.whiteUsername())){
                 playerColor = "WHITE";
+                message = playerName + " has joined as " + playerColor + ".";
+            }else{
+                message = playerName + " has joined as an observer.";
             }
+
+//            if (gameData.whiteUsername() == null){
+//                playerColor = "BLACK";
+//            } else if (gameData.blackUsername() == null){
+//                playerColor = "WHITE";
+//            }else{
+//                message = playerName + " has joined as an observer.";
+//            }
 
 //            if (gameData.whiteUsername() == playerName){
 //                playerColor = "WHITE";
@@ -107,10 +120,6 @@ public class WebSocketHandler {
             //get the game data, check if username is white, balck, or neither then observer
             Connection thisConnection = new Connection(playerName, gameID, authToken, session);
             connections.addSessionToGame(gameID, thisConnection);
-            String message = playerName + " has joined as " + playerColor + ".";
-            if (playerColor == null) {
-                message = playerName + " has joined as an observer.";
-            }
             LoadGameMessage loadGameMessage = new LoadGameMessage(gameData);
             thisConnection.sendMessage(loadGameMessage);
 
