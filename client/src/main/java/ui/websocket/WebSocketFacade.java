@@ -114,13 +114,13 @@ public class WebSocketFacade extends Endpoint {
         }
     }
 
-//    public void leave(LeaveMessage leaveMessage) {
-//        try {
-//            sendLeaveMessage(leaveMessage);
-//        } catch (ResponseException e) {
-//            throw new RuntimeException(e.getMessage());
-//        }
-//    }
+    public void check(LeaveMessage leaveMessage) {
+        try {
+            sendLeaveMessage(leaveMessage);
+        } catch (ResponseException e) {
+            throw new RuntimeException(e.getMessage());
+        }
+    }
 
     private void sendConnectMessage(ConnectMessage connectMessage) throws ResponseException {
         try {

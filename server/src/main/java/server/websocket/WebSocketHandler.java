@@ -165,23 +165,15 @@ public class WebSocketHandler {
             ChessGame chessGame = gameData.game();
             board = gameData.game().getBoard();
             currentColor = getCurrentColor(gameData, playerName);
+            NotificationMessage notificationMessage;
+            String message;
+            Connection thisConnection  = getCorrectConnection(connections.getSessionForGameID(gameID), playerName);
             try {
                 if (!chessGame.validMoves((chessMove.getStartPosition())).contains(chessMove) || !chessGame.getTeamTurn().equals(currentColor) || chessGame.isGameOver()) {
                     Connection errorConnection = new Connection(null, 0, null, session);
                     errorConnection.sendMessage(new ErrorMessage("invalid move"));
                     return;
                 }
-                chessGame.makeMove(makeMoveMessage.getChessMove());
-                gameDAO.updateGame(gameData); //gameData may not be updated we will see
-
-                LoadGameMessage loadGameMessage = new LoadGameMessage(gameData);
-                broadcastMessage(gameID, loadGameMessage, null);
-
-                String message = playerName + " made this chessmove :" + chessMove.getStartPosition() + "to " +  chessMove.getEndPosition();
-                System.out.print(message);
-                NotificationMessage notificationMessage = new NotificationMessage(message);
-                Connection thisConnection  = getCorrectConnection(connections.getSessionForGameID(gameID), playerName);
-                broadcastMessage(gameID, notificationMessage, thisConnection);
                 if (currentColor == ChessGame.TeamColor.WHITE){
                     if (gameData.game().isInCheck(ChessGame.TeamColor.BLACK)){
                         message = gameData.blackUsername() + " is in check";
@@ -195,6 +187,17 @@ public class WebSocketHandler {
                         broadcastMessage(gameID, notificationMessage, thisConnection);
                     }
                 }
+                chessGame.makeMove(makeMoveMessage.getChessMove());
+                gameDAO.updateGame(gameData); //gameData may not be updated we will see
+
+                LoadGameMessage loadGameMessage = new LoadGameMessage(gameData);
+                broadcastMessage(gameID, loadGameMessage, null);
+
+                message = playerName + " made this chessmove: " + chessMove.getStartPosition() + " to " +  chessMove.getEndPosition();
+//                System.out.print(message);
+                notificationMessage = new NotificationMessage(message);
+                broadcastMessage(gameID, notificationMessage, thisConnection);
+
             } catch (InvalidMoveException e) {
                 throw new RuntimeException(e);
             }
