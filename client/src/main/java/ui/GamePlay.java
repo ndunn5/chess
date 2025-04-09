@@ -18,6 +18,7 @@ import ui.websocket.GameUI;
 import ui.websocket.WebSocketFacade;
 import websocket.commands.ConnectMessage;
 import websocket.commands.LeaveMessage;
+import websocket.commands.MakeMoveMessage;
 
 import java.util.*;
 
@@ -33,18 +34,19 @@ public class GamePlay {
     //show what move is being made and name of player
     //reread spek, websocket notifations
     private final ServerFacade server;
-    private final String serverUrl;
+    private String serverUrl;
     private final ArrayList<String> sideLetters = new ArrayList<>(Arrays.asList(" ", "a", "b", "c", "d", "e", "f", "g", "h", " "));
     private final ArrayList<String> sideNumbers = new ArrayList<>(Arrays.asList(" ", "1", "2", "3", "4", "5", "6", "7", "8", " "));
 //    private ChessBoard currentBoard = new ChessBoard();
 //    private String clientColor = "WHITE";
     private ChessGame chessGame = new ChessGame();
     private GameHandler gameHandler;
-    private String authoken;
+    private String authToken;
     private int gameID;
     private String playerName;
     String currentColor;
     private PostLoginClient postLoginClient;
+    WebSocketFacade ws;
 
 
     public GamePlay(String serverUrl, GameHandler gameHandler, PostLoginClient postLoginClient) {
@@ -53,6 +55,15 @@ public class GamePlay {
         this.gameHandler = gameHandler;
         this.postLoginClient = postLoginClient;
         this.currentColor = postLoginClient.getCurrentColor();
+        this.gameID = postLoginClient.getGameID();
+        this.authToken = postLoginClient.getAuthToken();
+        try{
+            this.ws = new WebSocketFacade(serverUrl, gameHandler);
+        } catch (ResponseException e) {
+            throw new RuntimeException(e);
+        }
+
+//        ws = postLoginClient.getWebSocketFacade();
     }
 
     public String eval(String input) {
@@ -65,11 +76,19 @@ public class GamePlay {
                 case ("redraw") -> redraw();
                 case ("highlight") -> highlight(params);
                 case ("leave") -> leave();
+                case ("move") -> makeMove(params);
                 default -> help();
             };
         } catch (ResponseException ex) {
             return ex.getMessage();
         }
+    }
+
+    public void updateGamePlay(PostLoginClient postLoginClient){
+        this.postLoginClient = postLoginClient;
+        this.currentColor = postLoginClient.getCurrentColor();
+        this.gameID = postLoginClient.getGameID();
+        this.authToken = postLoginClient.getAuthToken();
     }
 
 
@@ -94,9 +113,7 @@ public class GamePlay {
         if(params.length == 1){
             String letterAndNumber = params[0];
             if (checkValidLetterAndNumber(letterAndNumber)){
-                int row = Character.getNumericValue(letterAndNumber.charAt(1));
-                int col = sideLetters.indexOf(String.valueOf(letterAndNumber.charAt(0)));
-                ChessPosition chessPosition = new ChessPosition(row, col);
+                ChessPosition chessPosition = getChessPosition(letterAndNumber);
                 ChessPiece chessPiece = gameHandler.getCurrentBoard().getPiece(chessPosition);
 //                ChessPiece chessPiece = currentBoard.getPiece(chessPosition);
                 if (chessPiece == null){
@@ -114,6 +131,13 @@ public class GamePlay {
             }
         }
         throw new ResponseException(400, "Expected: <letter(a-h) number (1-8)>");
+    }
+
+    private ChessPosition getChessPosition(String letterAndNumber) {
+        int row = Character.getNumericValue(letterAndNumber.charAt(1));
+        int col = sideLetters.indexOf(String.valueOf(letterAndNumber.charAt(0)));
+        ChessPosition chessPosition = new ChessPosition(row, col);
+        return chessPosition;
     }
 
     private boolean checkValidLetterAndNumber(String letterAndNumber){
@@ -148,14 +172,36 @@ public class GamePlay {
     public String leave(){
         try{
             WebSocketFacade ws = new WebSocketFacade(serverUrl, gameHandler);
-            ws.leave(new LeaveMessage(authoken, gameID, playerName, currentColor));
+            ws.leave(new LeaveMessage(authToken, gameID, playerName, currentColor));
         } catch (ResponseException e) {
             throw new RuntimeException(e);
         }
         return "dummy string";
     }
 
-    public String makeMove(){
+    public String makeMove(String... params){
+        if (params.length == 2){
+            String startLetterAndNumber = params[0];
+            String endLetterAndNumber = params[1];
+            if (checkValidLetterAndNumber(startLetterAndNumber) && checkValidLetterAndNumber(endLetterAndNumber)){
+                ChessPosition startPosition = getChessPosition(startLetterAndNumber);
+                ChessPosition endPosition = getChessPosition(endLetterAndNumber);
+                ChessPiece piece = gameHandler.getCurrentBoard().getPiece(startPosition);
+
+                if (piece.getTeamColor() == ChessGame.TeamColor.WHITE){
+                    if (piece.getPieceType() == ChessPiece.PieceType.PAWN && endPosition.getRow() == 8){
+                        return "what would you like to promote to?";
+                    }
+                } else{
+                    if (piece.getPieceType() == ChessPiece.PieceType.PAWN && endPosition.getRow() == 1){
+                        return "what would you like to promote to?";
+                    }
+                }
+
+                ChessMove move = new ChessMove(startPosition, endPosition, null);
+                ws.makeMove(new MakeMoveMessage(authToken, gameID, move));
+            }
+        }
         return "dummy string";
     }
 

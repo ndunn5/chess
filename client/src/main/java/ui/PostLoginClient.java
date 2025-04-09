@@ -25,6 +25,8 @@ public class PostLoginClient {
     private GameHandler gameHandler;
     public String currentColor = "WHITE";
     public String authToken;
+    public WebSocketFacade ws;
+    public int gameID;
 
     public PostLoginClient(String serverUrl, GameHandler gameHandler){
         server = new ServerFacade(serverUrl);
@@ -139,6 +141,20 @@ public class PostLoginClient {
         return currentColor;
     }
 
+    public WebSocketFacade getWebSocketFacade(){
+        return ws;
+    }
+
+    public String getAuthToken(){
+        return authToken;
+    }
+
+    public int getGameID(){
+        return gameID;
+    }
+
+
+
     public String joinGame(String... params) throws ResponseException {
         if (screenIDToGameDetails.isEmpty()) {
             return "please list games first";
@@ -151,7 +167,7 @@ public class PostLoginClient {
                     return "Invalid ID number";
                 }
                 Number gameIDObj = (Number) gameDetails.get("gameID");
-                int gameID = gameIDObj.intValue();
+                gameID = gameIDObj.intValue();
                 String currentBoard = (String) gameDetails.get("game");
                 currentColor = params[1];
 
@@ -201,7 +217,7 @@ public class PostLoginClient {
             JsonObject boardObject = jsonObject.getAsJsonObject("board");
             ChessBoard board = gson.fromJson(boardObject, ChessBoard.class);
 
-            WebSocketFacade ws = new WebSocketFacade(serverUrl, gameHandler);
+            ws = new WebSocketFacade(serverUrl, gameHandler);
             ws.connect(new ConnectMessage(authToken, gameID, "WHITE"));
 
 
