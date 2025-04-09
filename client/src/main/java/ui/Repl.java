@@ -24,6 +24,8 @@ public class Repl {
 
     private static State state = State.SIGNEDOUT;
     String serverUrl;
+    PromoteClient promoteClient = new PromoteClient();
+
 
 
 
@@ -33,7 +35,6 @@ public class Repl {
         GameHandler gameHandler = new GameUI(serverUrl);
         postLoginClient = new PostLoginClient(serverUrl, gameHandler);
         this.gamePlay = new GamePlay(serverUrl,gameHandler, postLoginClient );
-
     }
 
 
@@ -47,7 +48,7 @@ public class Repl {
             printPrompt();
             String line = scanner.nextLine();
             try {
-                gamePlay.updateGamePlay(postLoginClient);
+                gamePlay.updateGamePlay(postLoginClient, promoteClient);
 
                 switch(state){
                     case SIGNEDOUT -> result = preLoginClient.eval(line);
@@ -55,7 +56,7 @@ public class Repl {
                     case SIGNEDIN -> result = postLoginClient.eval(line);
 
                     case GAMEPLAY -> result = gamePlay.eval(line);
-
+                    case PROMOTE -> result = promoteClient.eval(line);
                 }
 
                 System.out.print(EscapeSequences.SET_BG_COLOR_WHITE + result);

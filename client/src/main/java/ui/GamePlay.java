@@ -47,6 +47,7 @@ public class GamePlay {
     String currentColor;
     private PostLoginClient postLoginClient;
     WebSocketFacade ws;
+    PromoteClient promoteClient;
 
 
     public GamePlay(String serverUrl, GameHandler gameHandler, PostLoginClient postLoginClient) {
@@ -84,11 +85,12 @@ public class GamePlay {
         }
     }
 
-    public void updateGamePlay(PostLoginClient postLoginClient){
+    public void updateGamePlay(PostLoginClient postLoginClient, PromoteClient promoteClient){
         this.postLoginClient = postLoginClient;
         this.currentColor = postLoginClient.getCurrentColor();
         this.gameID = postLoginClient.getGameID();
         this.authToken = postLoginClient.getAuthToken();
+        this.promoteClient = promoteClient;
     }
 
 
@@ -199,10 +201,16 @@ public class GamePlay {
                         return "what would you like to promote to?";
                     }
                 }
-
-                ChessMove move = new ChessMove(startPosition, endPosition, null);
-                MakeMoveMessage makeMoveMessage = new MakeMoveMessage(authToken, gameID, move);
-                ws.makeMove(makeMoveMessage);
+                ChessPiece.PieceType test = promoteClient.getReturnPieceType();
+                if (promoteClient.getReturnPieceType() != ChessPiece.PieceType.PAWN){
+                    ChessMove move = new ChessMove(startPosition, endPosition, promoteClient.getReturnPieceType());
+                    MakeMoveMessage makeMoveMessage = new MakeMoveMessage(authToken, gameID, move);
+                    ws.makeMove(makeMoveMessage);
+                } else{
+                    ChessMove move = new ChessMove(startPosition, endPosition, null);
+                    MakeMoveMessage makeMoveMessage = new MakeMoveMessage(authToken, gameID, move);
+                    ws.makeMove(makeMoveMessage);
+                }
             } else{
                 return "Expected: move <a-h1-8> <a-h1-8>";
             }
