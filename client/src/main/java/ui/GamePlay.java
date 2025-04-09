@@ -170,12 +170,12 @@ public class GamePlay {
 
 
     public String leave(){
-        try{
-            WebSocketFacade ws = new WebSocketFacade(serverUrl, gameHandler);
-            ws.leave(new LeaveMessage(authToken, gameID, playerName, currentColor));
-        } catch (ResponseException e) {
-            throw new RuntimeException(e);
-        }
+//        try{
+//            WebSocketFacade ws = new WebSocketFacade(serverUrl, gameHandler);
+//            ws.leave(new LeaveMessage(authToken, gameID, playerName, currentColor));
+//        } catch (ResponseException e) {
+//            throw new RuntimeException(e);
+//        }
         return "dummy string";
     }
 
@@ -190,19 +190,26 @@ public class GamePlay {
 
                 if (piece.getTeamColor() == ChessGame.TeamColor.WHITE){
                     if (piece.getPieceType() == ChessPiece.PieceType.PAWN && endPosition.getRow() == 8){
+                        Repl.updateState(State.PROMOTE);
                         return "what would you like to promote to?";
                     }
                 } else{
                     if (piece.getPieceType() == ChessPiece.PieceType.PAWN && endPosition.getRow() == 1){
+                        Repl.updateState(State.PROMOTE);
                         return "what would you like to promote to?";
                     }
                 }
 
                 ChessMove move = new ChessMove(startPosition, endPosition, null);
-                ws.makeMove(new MakeMoveMessage(authToken, gameID, move));
+                MakeMoveMessage makeMoveMessage = new MakeMoveMessage(authToken, gameID, move);
+                ws.makeMove(makeMoveMessage);
+            } else{
+                return "Expected: move <a-h1-8> <a-h1-8>";
             }
+        }else{
+            return "Expected: move <a-h1-8> <a-h1-8>";
         }
-        return "dummy string";
+        return "";
     }
 
 
