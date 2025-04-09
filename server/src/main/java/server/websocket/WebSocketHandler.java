@@ -177,24 +177,26 @@ public class WebSocketHandler {
                 chessGame.makeMove(makeMoveMessage.getChessMove());
                 gameDAO.updateGame(gameData);
                 if (currentColor == ChessGame.TeamColor.WHITE){
-                    if (gameData.game().isInCheck(ChessGame.TeamColor.BLACK)){
+                    if(gameData.game().isInCheckmate(ChessGame.TeamColor.BLACK)){
+                        message = gameData.blackUsername() + " is in checkMate. " + gameData.whiteUsername() + " won!";
+                        notificationMessage = new NotificationMessage(message);
+                        broadcastMessage(gameID, notificationMessage, null);
+                        chessGame.setGameOver(true);
+                    } else if (gameData.game().isInCheck(ChessGame.TeamColor.BLACK) && !gameData.game().isInCheckmate(ChessGame.TeamColor.BLACK)){
                         message = gameData.blackUsername() + " is in check";
                         notificationMessage = new NotificationMessage(message);
-                        broadcastMessage(gameID, notificationMessage, thisConnection);
-                    } else if(gameData.game().isInCheckmate(ChessGame.TeamColor.BLACK)){
-                        message = gameData.blackUsername() + " is in checkMate";
-                        notificationMessage = new NotificationMessage(message);
-                        broadcastMessage(gameID, notificationMessage, thisConnection);
+                        broadcastMessage(gameID, notificationMessage, null);
                     }
                 } else{
-                    if (gameData.game().isInCheck(ChessGame.TeamColor.WHITE)){
+                    if(gameData.game().isInCheckmate(ChessGame.TeamColor.WHITE)){
+                        message = gameData.whiteUsername() + " is in checkMate. " + gameData.blackUsername() + " won!";
+                        notificationMessage = new NotificationMessage(message);
+                        broadcastMessage(gameID, notificationMessage, null);
+                        chessGame.setGameOver(true);
+                    } else if (gameData.game().isInCheck(ChessGame.TeamColor.WHITE) && !gameData.game().isInCheckmate(ChessGame.TeamColor.WHITE)){
                         message = gameData.whiteUsername() + " is in check";
                         notificationMessage = new NotificationMessage(message);
-                        broadcastMessage(gameID, notificationMessage, thisConnection);
-                    } else if(gameData.game().isInCheckmate(ChessGame.TeamColor.WHITE)){
-                        message = gameData.whiteUsername() + " is in checkMate";
-                        notificationMessage = new NotificationMessage(message);
-                        broadcastMessage(gameID, notificationMessage, thisConnection);
+                        broadcastMessage(gameID, notificationMessage, null);
                     }
                 }
 
