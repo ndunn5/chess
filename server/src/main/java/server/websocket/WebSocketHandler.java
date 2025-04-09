@@ -10,6 +10,7 @@ import extramodel.JoinGameRequest;
 import model.AuthData;
 import model.GameData;
 import model.JoinGameResult;
+import org.eclipse.jetty.websocket.api.WebSocketListener;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketError;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
 import org.eclipse.jetty.websocket.api.annotations.WebSocket;
@@ -29,8 +30,8 @@ import websocket.messages.LoadGameMessage;
 import websocket.messages.NotificationMessage;
 import websocket.messages.ServerMessage;
 
-//@WebSocket
-public class WebSocketHandler {
+@WebSocket
+public class WebSocketHandler{
 
     UserDAO userDAO;
     AuthDAO authDAO;
