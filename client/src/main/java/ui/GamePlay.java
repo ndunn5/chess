@@ -174,13 +174,9 @@ public class GamePlay {
 
 
     public String leave(){
-//        try{
-//            WebSocketFacade ws = new WebSocketFacade(serverUrl, gameHandler);
-//            ws.leave(new LeaveMessage(authToken, gameID, playerName, currentColor));
-//        } catch (ResponseException e) {
-//            throw new RuntimeException(e);
-//        }
-        return "dummy string";
+        ws.leave(new LeaveMessage(authToken, gameID, playerName, currentColor));
+        Repl.updateState(State.SIGNEDIN);
+        return "left game successfully";
     }
 
     public String makeMove(String... params){
