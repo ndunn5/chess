@@ -155,4 +155,9 @@ public class GamePlay {
         return "dummy string";
     }
 
+    public String makeMove(){
+        return "dummy string";
+    }
+
+
 }
