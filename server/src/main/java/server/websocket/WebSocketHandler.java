@@ -20,11 +20,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Set;
-import java.util.Timer;
 
 import org.eclipse.jetty.websocket.api.Session;
-import spark.Request;
-import spark.Response;
 import dataaccess.*;
 import websocket.commands.*;
 import websocket.messages.ErrorMessage;
@@ -32,7 +29,7 @@ import websocket.messages.LoadGameMessage;
 import websocket.messages.NotificationMessage;
 import websocket.messages.ServerMessage;
 
-@WebSocket
+//@WebSocket
 public class WebSocketHandler {
 
     UserDAO userDAO;
