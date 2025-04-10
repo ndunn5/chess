@@ -27,17 +27,6 @@ public class Connection {
         return authToken;
     }
 
-    public String getPlayerName(){
-        return playerName;
-    }
-
-    public void send(String msg) throws IOException {
-        session.getRemote().sendString(msg);
-    }
-
-    public boolean isOpen() {
-        return session.isOpen();
-    }
 
     public void sendMessage(ServerMessage message){
         try{

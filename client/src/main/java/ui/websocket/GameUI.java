@@ -50,10 +50,6 @@ public class GameUI implements GameHandler{
 
     public String showBoard(ChessBoard board, String whiteOrBlack) {//can just pass in the object itself
         clientColor = whiteOrBlack;
-//        Gson gson = new Gson();
-//        JsonObject jsonObject = JsonParser.parseString(boardState).getAsJsonObject();
-//        JsonObject boardObject = jsonObject.getAsJsonObject("board");
-//        currentBoard = gson.fromJson(boardObject, ChessBoard.class);
         currentBoard = board;
         System.out.print(drawBoard(whiteOrBlack, null));
         return drawBoard(whiteOrBlack, null);
