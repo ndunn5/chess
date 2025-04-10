@@ -95,19 +95,6 @@ public class WebSocketHandler{
                 message = playerName + " has joined as an observer.";
             }
 
-//            if (gameData.whiteUsername() == null){
-//                playerColor = "BLACK";
-//            } else if (gameData.blackUsername() == null){
-//                playerColor = "WHITE";
-//            }else{
-//                message = playerName + " has joined as an observer.";
-//            }
-
-//            if (gameData.whiteUsername() == playerName){
-//                playerColor = "WHITE";
-//            } else if (gameData.blackUsername() == playerName){
-//                playerColor = "BLACK";
-//            }
             //get the game data, check if username is white, balck, or neither then observer
             Connection thisConnection = new Connection(playerName, gameID, authToken, session);
             connections.addSessionToGame(gameID, thisConnection);
@@ -304,7 +291,7 @@ public class WebSocketHandler{
     }
 
 
-    public void broadcastMessage(int gameID, ServerMessage message, Connection ExceptThisConnection) {//use a connection object and compare using the username rather than the session
+    public void broadcastMessage(int gameID, ServerMessage message, Connection exceptThisConnection) {//use a connection object and compare using the username rather than the session
         var removeList = new ArrayList<Connection>();
         Set<Connection> relevantConnections = connections.getSessionForGameID(gameID);
         if (relevantConnections == null) {
@@ -314,9 +301,9 @@ public class WebSocketHandler{
         }
         for (Connection c : relevantConnections) {
             if (c.session.isOpen()) {
-                if (ExceptThisConnection == null){
+                if (exceptThisConnection == null){
                     c.sendMessage(message);
-                } else if (ExceptThisConnection.playerName != c.playerName) {
+                } else if (exceptThisConnection.playerName != c.playerName) {
                     c.sendMessage(message);
                 }
             } else {
