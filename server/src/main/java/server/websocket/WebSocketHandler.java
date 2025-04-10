@@ -171,6 +171,7 @@ public class WebSocketHandler{
                         notificationMessage = new NotificationMessage(message);
                         broadcastMessage(gameID, notificationMessage, null);
                     }
+                    //just a little commit
                 } else{
                     if(gameData.game().isInCheckmate(ChessGame.TeamColor.WHITE)){
                         message = gameData.whiteUsername() + " is in checkMate. " + gameData.blackUsername() + " won!";
