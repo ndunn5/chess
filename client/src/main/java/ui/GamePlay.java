@@ -24,20 +24,30 @@ import websocket.commands.ResignMessage;
 import java.util.*;
 
 public class GamePlay {
-    //start with server side stuff(make a separate class that can also access the DAOs)-> make sure its working in the webiste-> test cases  -> go to the client side things
-    //be careful with copying and pasting from petshop
-    //think through how someone can break things
-    //an observer tries to make move or resign
-    //wrong color makes move for the other color
-    //instruction page just on websockets
-    //can use any color for highlight
-    //do something for pawn promotion
-    //show what move is being made and name of player
-    //reread spek, websocket notifations
     private final ServerFacade server;
     private String serverUrl;
-    private final ArrayList<String> sideLetters = new ArrayList<>(Arrays.asList(" ", "a", "b", "c", "d", "e", "f", "g", "h", " "));
-    private final ArrayList<String> sideNumbers = new ArrayList<>(Arrays.asList(" ", "1", "2", "3", "4", "5", "6", "7", "8", " "));
+    private final ArrayList<String> sideLetters = new ArrayList<>(Arrays.asList(
+            " "
+            , "a"
+            , "b"
+            , "c"
+            , "d"
+            , "e"
+            , "f"
+            , "g"
+            , "h"
+            , " "));
+    private final ArrayList<String> sideNumbers = new ArrayList<>(Arrays.asList(
+            " "
+            , "1"
+            , "2"
+            , "3"
+            , "4"
+            , "5"
+            , "6"
+            , "7"
+            , "8"
+            , " "));
 //    private ChessBoard currentBoard = new ChessBoard();
 //    private String clientColor = "WHITE";
     private ChessGame chessGame = new ChessGame();

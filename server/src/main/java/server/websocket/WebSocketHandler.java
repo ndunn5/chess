@@ -147,7 +147,9 @@ public class WebSocketHandler{
             String message;
             Connection thisConnection  = getCorrectConnection(connections.getSessionForGameID(gameID), playerName);
             try {
-                if (!chessGame.validMoves((chessMove.getStartPosition())).contains(chessMove) || !chessGame.getTeamTurn().equals(currentColor) || chessGame.isGameOver()) {
+                if (!chessGame.validMoves((chessMove.getStartPosition())).contains(chessMove)
+                        || !chessGame.getTeamTurn().equals(currentColor)
+                        || chessGame.isGameOver()) {
                     Connection errorConnection = new Connection(null, 0, null, session);
                     errorConnection.sendMessage(new ErrorMessage("invalid move"));
                     return;
@@ -292,7 +294,7 @@ public class WebSocketHandler{
     }
 
 
-    public void broadcastMessage(int gameID, ServerMessage message, Connection exceptThisConnection) {//use a connection object and compare using the username rather than the session
+    public void broadcastMessage(int gameID, ServerMessage message, Connection exceptThisConnection) {
         var removeList = new ArrayList<Connection>();
         Set<Connection> relevantConnections = connections.getSessionForGameID(gameID);
         if (relevantConnections == null) {

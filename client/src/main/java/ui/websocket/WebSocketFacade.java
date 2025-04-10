@@ -56,13 +56,6 @@ public class WebSocketFacade extends Endpoint {
 
                 }
             });
-//            this.session.addMessageHandler(new MessageHandler.Whole<String>() {
-//                @Override
-//                public void onMessage(String message) {
-//                    ServerMessage serverMessage = new Gson().fromJson(message, ServerMessage.class);
-//                    gameHandler.printMessage(serverMessage);
-//                }
-//            });
         } catch (DeploymentException | IOException | URISyntaxException ex) {
             throw new ResponseException(500, ex.getMessage());
         }
@@ -114,13 +107,6 @@ public class WebSocketFacade extends Endpoint {
         }
     }
 
-    public void check(LeaveMessage leaveMessage) {
-        try {
-            sendLeaveMessage(leaveMessage);
-        } catch (ResponseException e) {
-            throw new RuntimeException(e.getMessage());
-        }
-    }
 
     private void sendConnectMessage(ConnectMessage connectMessage) throws ResponseException {
         try {
